@@ -30,7 +30,6 @@
 | 구분 | 기술 |
 | --- | --- |
 | Backend | Java 17, Spring Boot 3.x, JPA |
-| DB | PostgreSQL 16 |
 | Infra | Docker, Docker Compose |
 
 ---
@@ -43,7 +42,7 @@
 │   │   │
 │   │   ├── domain                    # 마이데이터 비즈니스 도메인
 │   │   │   ├── bank                  # 은행 데이터 수집 및 연동 기능
-│   │   │   └── invest                # 투자/증권 데이터 수집 기능
+│   │   │   └── stock                 # 투자/증권 데이터 수집 기능
 │   │   │
 │   │   └── global                    # 공통 설정 및 전역 모듈
 │   │
