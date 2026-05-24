@@ -1,9 +1,6 @@
 package com.mydata.domain.bank.client.internal;
 
-import com.mydata.domain.bank.client.dto.response.BankAccountDetailResponse;
-import com.mydata.domain.bank.client.dto.response.BankAccountResponse;
-import com.mydata.domain.bank.client.dto.response.BankBalanceResponse;
-import com.mydata.domain.bank.client.dto.response.BankTransactionResponse;
+import com.mydata.domain.bank.client.dto.response.*;
 import com.mydata.global.response.ApiResponse;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -34,4 +31,8 @@ public interface BankInternalClient {
       @RequestParam(required = false) String toDate,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "20") Integer size);
+
+  @GetMapping("/baas/v1/bank/accounts/{accountId}/transactions/categories")
+  ApiResponse<List<BankTransactionCategoryResponse>> getTransactionCategories(
+      @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId);
 }

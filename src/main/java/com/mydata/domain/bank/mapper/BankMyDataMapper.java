@@ -1,13 +1,7 @@
 package com.mydata.domain.bank.mapper;
 
-import com.mydata.domain.bank.client.dto.response.BankAccountDetailResponse;
-import com.mydata.domain.bank.client.dto.response.BankAccountResponse;
-import com.mydata.domain.bank.client.dto.response.BankBalanceResponse;
-import com.mydata.domain.bank.client.dto.response.BankTransactionResponse;
-import com.mydata.domain.bank.dto.response.AccountDetailResponse;
-import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
-import com.mydata.domain.bank.dto.response.BalanceResponse;
-import com.mydata.domain.bank.dto.response.TransactionResponse;
+import com.mydata.domain.bank.client.dto.response.*;
+import com.mydata.domain.bank.dto.response.*;
 import java.util.List;
 import org.mapstruct.Mapper;
 
@@ -25,4 +19,8 @@ public interface BankMyDataMapper {
   TransactionResponse toTransactionResponse(BankTransactionResponse response);
 
   List<TransactionResponse> toTransactionResponseList(List<BankTransactionResponse> responses);
+
+  CategoryResponse toCategoryResponse(BankTransactionCategoryResponse response);
+
+  List<CategoryResponse> toCategoryResponseList(List<BankTransactionCategoryResponse> responses);
 }

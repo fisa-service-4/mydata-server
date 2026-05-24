@@ -1,10 +1,7 @@
 package com.mydata.domain.bank.service;
 
 import com.mydata.domain.bank.dto.request.TransactionSearchRequest;
-import com.mydata.domain.bank.dto.response.AccountDetailResponse;
-import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
-import com.mydata.domain.bank.dto.response.BalanceResponse;
-import com.mydata.domain.bank.dto.response.TransactionResponse;
+import com.mydata.domain.bank.dto.response.*;
 import java.util.List;
 
 public interface BankMyDataService {
@@ -17,4 +14,6 @@ public interface BankMyDataService {
 
   List<TransactionResponse> getTransactions(
       Long userId, Long accountId, TransactionSearchRequest request);
+
+  List<CategoryResponse> getTransactionCategories(Long userId, Long accountId);
 }

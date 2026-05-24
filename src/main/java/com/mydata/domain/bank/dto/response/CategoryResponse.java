@@ -1,3 +1,6 @@
 package com.mydata.domain.bank.dto.response;
 
-public class CategoryResponse {}
+import lombok.Builder;
+
+@Builder
+public record CategoryResponse(String category, Long amount) {}
