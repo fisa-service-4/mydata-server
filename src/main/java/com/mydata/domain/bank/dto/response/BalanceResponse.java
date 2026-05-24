@@ -1,3 +1,6 @@
 package com.mydata.domain.bank.dto.response;
 
-public class BalanceResponse {}
+import lombok.Builder;
+
+@Builder
+public record BalanceResponse(Long accountId, Long balance, Long availableBalance) {}
