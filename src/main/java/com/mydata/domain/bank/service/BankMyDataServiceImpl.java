@@ -3,10 +3,13 @@ package com.mydata.domain.bank.service;
 import com.mydata.domain.bank.client.dto.response.BankAccountDetailResponse;
 import com.mydata.domain.bank.client.dto.response.BankAccountResponse;
 import com.mydata.domain.bank.client.dto.response.BankBalanceResponse;
+import com.mydata.domain.bank.client.dto.response.BankTransactionResponse;
 import com.mydata.domain.bank.client.internal.BankInternalClient;
+import com.mydata.domain.bank.dto.request.TransactionSearchRequest;
 import com.mydata.domain.bank.dto.response.AccountDetailResponse;
 import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
 import com.mydata.domain.bank.dto.response.BalanceResponse;
+import com.mydata.domain.bank.dto.response.TransactionResponse;
 import com.mydata.domain.bank.exception.BankMyDataException;
 import com.mydata.domain.bank.mapper.BankMyDataMapper;
 import com.mydata.global.exception.ErrorCode;
@@ -57,5 +60,25 @@ public class BankMyDataServiceImpl implements BankMyDataService {
     }
 
     return bankMyDataMapper.toBalanceResponse(response.data());
+  }
+
+  @Override
+  public List<TransactionResponse> getTransactions(
+      Long userId, Long accountId, TransactionSearchRequest request) {
+
+    ApiResponse<List<BankTransactionResponse>> response =
+        bankInternalClient.getTransactions(
+            userId,
+            accountId,
+            request.fromDate(),
+            request.toDate(),
+            request.page(),
+            request.size());
+
+    if (response == null || response.data() == null) {
+      throw new BankMyDataException(ErrorCode.TRANSACTION_001);
+    }
+
+    return bankMyDataMapper.toTransactionResponseList(response.data());
   }
 }

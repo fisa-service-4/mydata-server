@@ -1,8 +1,10 @@
 package com.mydata.domain.bank.controller;
 
+import com.mydata.domain.bank.dto.request.TransactionSearchRequest;
 import com.mydata.domain.bank.dto.response.AccountDetailResponse;
 import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
 import com.mydata.domain.bank.dto.response.BalanceResponse;
+import com.mydata.domain.bank.dto.response.TransactionResponse;
 import com.mydata.domain.bank.service.BankMyDataService;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,5 +43,26 @@ public class BankMyDataController {
       @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId) {
 
     return ApiResponse.success(bankMyDataService.getBalance(userId, accountId));
+  }
+
+  @Operation(summary = "거래내역 조회")
+  @GetMapping("/{accountId}/transactions")
+  public ApiResponse<List<TransactionResponse>> getTransactions(
+      @RequestHeader("X-User-Id") Long userId,
+      @PathVariable Long accountId,
+      @RequestParam(required = false) String fromDate,
+      @RequestParam(required = false) String toDate,
+      @RequestParam(defaultValue = "0") Integer page,
+      @RequestParam(defaultValue = "20") Integer size) {
+
+    TransactionSearchRequest request =
+        TransactionSearchRequest.builder()
+            .fromDate(fromDate)
+            .toDate(toDate)
+            .page(page)
+            .size(size)
+            .build();
+
+    return ApiResponse.success(bankMyDataService.getTransactions(userId, accountId, request));
   }
 }
