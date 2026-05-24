@@ -1,3 +1,7 @@
 spring:
   application:
     name: mydata-server
+
+  logging:
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] [%thread] %-5level %logger - %msg%n"

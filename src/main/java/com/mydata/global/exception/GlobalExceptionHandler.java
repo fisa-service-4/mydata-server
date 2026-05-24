@@ -1,5 +1,6 @@
 package com.mydata.global.exception;
 
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ public class GlobalExceptionHandler {
 
     ErrorCode errorCode = e.getErrorCode();
 
-    String traceId = request.getHeader("X-Trace-Id");
+    String traceId = request.getHeader(TraceIdConstants.TRACE_ID_HEADER);
 
     return ResponseEntity.status(errorCode.getStatus())
         .body(ErrorResponse.of(errorCode.getCode(), errorCode.getMessage(), traceId));
