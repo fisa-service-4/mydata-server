@@ -2,6 +2,18 @@ spring:
   application:
     name: mydata-server
 
-  logging:
-    pattern:
-      console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] [%thread] %-5level %logger - %msg%n"
+client:
+  bank:
+    base-url: http://localhost:8081
+
+  stock:
+    base-url: http://localhost:8082
+
+webclient:
+  timeout:
+    connect: 3000
+    read: 5000
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] [%thread] %-5level %logger - %msg%n"

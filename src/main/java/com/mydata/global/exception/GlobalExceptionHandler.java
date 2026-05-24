@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 @Slf4j
 @RestControllerAdvice
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleValidationException(
       MethodArgumentNotValidException e, HttpServletRequest request) {
 
-    String traceId = request.getHeader("X-Trace-Id");
+    String traceId = request.getHeader(TraceIdConstants.TRACE_ID_HEADER);
 
     return ResponseEntity.badRequest()
         .body(
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
 
     log.error("Unhandled Exception", e);
 
-    String traceId = request.getHeader("X-Trace-Id");
+    String traceId = request.getHeader(TraceIdConstants.TRACE_ID_HEADER);
 
     return ResponseEntity.internalServerError()
         .body(
@@ -50,5 +51,17 @@ public class GlobalExceptionHandler {
                 ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
                 ErrorCode.INTERNAL_SERVER_ERROR.getMessage(),
                 traceId));
+  }
+
+  @ExceptionHandler(WebClientRequestException.class)
+  public ResponseEntity<ErrorResponse> handleWebClientException(
+      WebClientRequestException e, HttpServletRequest request) {
+
+    String traceId = request.getHeader(TraceIdConstants.TRACE_ID_HEADER);
+
+    return ResponseEntity.internalServerError()
+        .body(
+            ErrorResponse.of(
+                ErrorCode.MYDATA_003.getCode(), ErrorCode.MYDATA_003.getMessage(), traceId));
   }
 }
