@@ -43,7 +43,16 @@ public enum ErrorCode {
   HOLDING_001(HttpStatus.NOT_FOUND, "HOLDING_001", "보유 종목 없음"),
 
   // INTERNAL
-  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_001", "서버 내부 오류");
+  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_001", "서버 내부 오류"),
+
+  // BANK_ACCOUNT(추가)
+  BANK_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "BANK_001", "계좌를 찾을 수 없습니다."),
+
+  BANK_ACCOUNT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "BANK_002", "계좌 접근 권한이 없습니다."),
+
+  BANK_ACCOUNT_INACTIVE(HttpStatus.BAD_REQUEST, "BANK_003", "비활성화된 계좌입니다."),
+
+  BANK_INTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "BANK_500", "은행 API 호출 중 오류가 발생했습니다.");
 
   private final HttpStatus status;
   private final String code;

@@ -2,6 +2,7 @@ package com.mydata.global.exception;
 
 import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ErrorResponse;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,18 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(WebClientRequestException.class)
   public ResponseEntity<ErrorResponse> handleWebClientException(
       WebClientRequestException e, HttpServletRequest request) {
+
+    String traceId = request.getHeader(TraceIdConstants.TRACE_ID_HEADER);
+
+    return ResponseEntity.internalServerError()
+        .body(
+            ErrorResponse.of(
+                ErrorCode.MYDATA_003.getCode(), ErrorCode.MYDATA_003.getMessage(), traceId));
+  }
+
+  @ExceptionHandler(FeignException.class)
+  public ResponseEntity<ErrorResponse> handleFeignException(
+      FeignException e, HttpServletRequest request) {
 
     String traceId = request.getHeader(TraceIdConstants.TRACE_ID_HEADER);
 
