@@ -7,6 +7,6 @@ public record AccountDetailResponse(
     Long accountId,
     String accountNumber,
     String accountName,
-    String bankName,
+    String bankCode,
     String accountStatus,
     Long balance) {}

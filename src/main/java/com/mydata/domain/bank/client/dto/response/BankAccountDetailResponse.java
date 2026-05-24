@@ -13,7 +13,7 @@ public class BankAccountDetailResponse {
 
   private String accountName;
 
-  private String bankName;
+  private String bankCode;
 
   private String accountStatus;
 

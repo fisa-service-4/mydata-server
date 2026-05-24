@@ -8,17 +8,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Bank MyData API", description = "은행 마이데이터 API")
+@Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mydata/v1/accounts")
+@RequestMapping("/mydata/v1/bank/accounts")
 public class BankMyDataController {
 
   private final BankMyDataService bankMyDataService;
 
-  @Operation(summary = "계좌 조회")
+  @Operation(summary = "계좌 조회", description = "사용자의 전체 계좌 목록을 조회합니다.")
   @GetMapping
   public ApiResponse<List<AccountSummaryResponse>> getAccounts(
       @RequestHeader("X-User-Id") Long userId) {
@@ -42,7 +44,7 @@ public class BankMyDataController {
     return ApiResponse.success(bankMyDataService.getBalance(userId, accountId));
   }
 
-  @Operation(summary = "거래내역 조회")
+  @Operation(summary = "거래내역 조회", description = "계좌 거래내역을 조회합니다.")
   @GetMapping("/{accountId}/transactions")
   public ApiResponse<List<TransactionResponse>> getTransactions(
       @RequestHeader("X-User-Id") Long userId,

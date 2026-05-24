@@ -38,7 +38,7 @@ public class BankMyDataServiceImpl implements BankMyDataService {
         bankInternalClient.getAccountDetail(userId, accountId);
 
     if (response == null || response.data() == null) {
-      throw new BankMyDataException(ErrorCode.BANK_ACCOUNT_NOT_FOUND);
+      throw new BankMyDataException(ErrorCode.ACCOUNT_001);
     }
 
     return bankMyDataMapper.toAccountDetail(response.data());
@@ -50,7 +50,7 @@ public class BankMyDataServiceImpl implements BankMyDataService {
     ApiResponse<BankBalanceResponse> response = bankInternalClient.getBalance(userId, accountId);
 
     if (response == null || response.data() == null) {
-      throw new BankMyDataException(ErrorCode.BANK_ACCOUNT_NOT_FOUND);
+      throw new BankMyDataException(ErrorCode.ACCOUNT_001);
     }
 
     return bankMyDataMapper.toBalanceResponse(response.data());
@@ -70,7 +70,7 @@ public class BankMyDataServiceImpl implements BankMyDataService {
             request.size());
 
     if (response == null || response.data() == null) {
-      throw new BankMyDataException(ErrorCode.TRANSACTION_001);
+      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
     }
 
     return bankMyDataMapper.toTransactionResponseList(response.data());
@@ -83,7 +83,7 @@ public class BankMyDataServiceImpl implements BankMyDataService {
         bankInternalClient.getTransactionCategories(userId, accountId);
 
     if (response == null || response.data() == null) {
-      throw new BankMyDataException(ErrorCode.TRANSACTION_001);
+      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
     }
 
     return bankMyDataMapper.toCategoryResponseList(response.data());
