@@ -1,5 +1,6 @@
 package com.mydata.domain.stock.controller;
 
+import com.mydata.domain.stock.dto.response.HoldingResponse;
 import com.mydata.domain.stock.dto.response.StockAccountSummaryResponse;
 import com.mydata.domain.stock.service.StockMyDataService;
 import com.mydata.global.response.ApiResponse;
@@ -7,10 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Stock MyData API", description = "증권 마이데이터 API")
 @RestController
@@ -26,5 +24,13 @@ public class StockMyDataController {
       @RequestHeader("X-User-Id") Long userId) {
 
     return ApiResponse.success(stockMyDataService.getAccounts(userId));
+  }
+
+  @Operation(summary = "보유 종목 조회")
+  @GetMapping("/accounts/{accountId}/holdings")
+  public ApiResponse<List<HoldingResponse>> getHoldings(
+      @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId) {
+
+    return ApiResponse.success(stockMyDataService.getHoldings(userId, accountId));
   }
 }
