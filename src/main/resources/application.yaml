@@ -3,11 +3,12 @@ spring:
     name: mydata-server
 
 client:
-  bank:
-    base-url: http://localhost:8081
-
   stock:
     base-url: http://localhost:8082
+
+external:
+  baas:
+    url: http://localhost:8083
 
 webclient:
   timeout:
@@ -17,3 +18,5 @@ webclient:
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] [%thread] %-5level %logger - %msg%n"
+  level:
+    com.mydata.domain.bank.client.internal: DEBUG

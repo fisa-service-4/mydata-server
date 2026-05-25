@@ -10,7 +10,7 @@
 
 ## MYDATA-BANK-ACCOUNT-001. 계좌 조회
 
-**GET** `/mydata/v1/accounts`
+**GET** `/mydata/v1/bank/accounts`
 
 ### Query Parameters
 
@@ -45,7 +45,7 @@
 
 ## MYDATA-BANK-ACCOUNT-002. 계좌 상세 조회
 
-**GET** `/mydata/v1/accounts/{accountId}`
+**GET** `/mydata/v1/bank/accounts/{accountId}`
 
 ### Response `200 OK`
 
@@ -81,7 +81,7 @@
 
 ## MYDATA-BANK-ACCOUNT-003. 잔액 조회
 
-**GET** `/mydata/v1/accounts/{accountId}/balance`
+**GET** `/mydata/v1/bank/accounts/{accountId}/balance`
 
 ### Response `200 OK`
 
@@ -91,7 +91,6 @@
   "data": {
     "accountId": 1001,
     "balance": 3500000,
-    "availableBalance": 3200000,
     "updatedAt": "2026-05-18T10:15:00"
   },
   "meta": {
@@ -111,7 +110,7 @@
 
 ## MYDATA-BANK-ACCOUNT-004. 거래내역 조회
 
-**GET** `/mydata/v1/accounts/{accountId}/transactions`
+**GET** `/mydata/v1/bank/accounts/{accountId}/transactions`
 
 ### Query Parameters
 
@@ -168,7 +167,7 @@
 
 ## MYDATA-BANK-ACCOUNT-005. 거래 카테고리 조회
 
-**GET** `/mydata/v1/accounts/{accountId}/transactions/categories`
+**GET** `/mydata/v1/bank/accounts/{accountId}/transactions/categories`
 
 ### Query Parameters
 
