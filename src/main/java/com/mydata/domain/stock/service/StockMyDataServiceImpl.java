@@ -1,14 +1,8 @@
 package com.mydata.domain.stock.service;
 
-import com.mydata.domain.stock.client.dto.response.StockAccountResponse;
-import com.mydata.domain.stock.client.dto.response.StockHoldingResponse;
-import com.mydata.domain.stock.client.dto.response.StockPortfolioResponse;
-import com.mydata.domain.stock.client.dto.response.StockReturnResponse;
+import com.mydata.domain.stock.client.dto.response.*;
 import com.mydata.domain.stock.client.internal.StockInternalClient;
-import com.mydata.domain.stock.dto.response.HoldingResponse;
-import com.mydata.domain.stock.dto.response.PortfolioResponse;
-import com.mydata.domain.stock.dto.response.ReturnResponse;
-import com.mydata.domain.stock.dto.response.StockAccountSummaryResponse;
+import com.mydata.domain.stock.dto.response.*;
 import com.mydata.domain.stock.exception.StockMyDataException;
 import com.mydata.domain.stock.mapper.StockMyDataMapper;
 import com.mydata.global.exception.ErrorCode;
@@ -73,5 +67,17 @@ public class StockMyDataServiceImpl implements StockMyDataService {
     }
 
     return stockMyDataMapper.toReturnResponse(response.data());
+  }
+
+  @Override
+  public AssetSummaryResponse getAssetSummary(Long userId) {
+
+    ApiResponse<StockAssetSummaryResponse> response = stockInternalClient.getAssetSummary(userId);
+
+    if (response == null || response.data() == null) {
+      throw new StockMyDataException(ErrorCode.STOCK_ASSET_SUMMARY_NOT_FOUND);
+    }
+
+    return stockMyDataMapper.toAssetSummaryResponse(response.data());
   }
 }

@@ -1,9 +1,6 @@
 package com.mydata.domain.stock.controller;
 
-import com.mydata.domain.stock.dto.response.HoldingResponse;
-import com.mydata.domain.stock.dto.response.PortfolioResponse;
-import com.mydata.domain.stock.dto.response.ReturnResponse;
-import com.mydata.domain.stock.dto.response.StockAccountSummaryResponse;
+import com.mydata.domain.stock.dto.response.*;
 import com.mydata.domain.stock.service.StockMyDataService;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,5 +47,13 @@ public class StockMyDataController {
       @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId) {
 
     return ApiResponse.success(stockMyDataService.getReturns(userId, accountId));
+  }
+
+  @Operation(summary = "전체 자산 요약 조회")
+  @GetMapping("/assets/summary")
+  public ApiResponse<AssetSummaryResponse> getAssetSummary(
+      @RequestHeader("X-User-Id") Long userId) {
+
+    return ApiResponse.success(stockMyDataService.getAssetSummary(userId));
   }
 }
