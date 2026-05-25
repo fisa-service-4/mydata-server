@@ -3,6 +3,7 @@ package com.mydata.domain.stock.client.internal;
 import com.mydata.domain.stock.client.dto.response.StockAccountResponse;
 import com.mydata.domain.stock.client.dto.response.StockHoldingResponse;
 import com.mydata.domain.stock.client.dto.response.StockPortfolioResponse;
+import com.mydata.domain.stock.client.dto.response.StockReturnResponse;
 import com.mydata.global.config.FeignConfig;
 import com.mydata.global.response.ApiResponse;
 import java.util.List;
@@ -26,5 +27,9 @@ public interface StockInternalClient {
 
   @GetMapping("/baas/v1/stock/accounts/{accountId}/portfolio")
   ApiResponse<StockPortfolioResponse> getPortfolio(
+      @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId);
+
+  @GetMapping("/baas/v1/stock/accounts/{accountId}/returns")
+  ApiResponse<StockReturnResponse> getReturns(
       @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId);
 }

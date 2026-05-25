@@ -2,6 +2,7 @@ package com.mydata.domain.stock.controller;
 
 import com.mydata.domain.stock.dto.response.HoldingResponse;
 import com.mydata.domain.stock.dto.response.PortfolioResponse;
+import com.mydata.domain.stock.dto.response.ReturnResponse;
 import com.mydata.domain.stock.dto.response.StockAccountSummaryResponse;
 import com.mydata.domain.stock.service.StockMyDataService;
 import com.mydata.global.response.ApiResponse;
@@ -41,5 +42,13 @@ public class StockMyDataController {
       @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId) {
 
     return ApiResponse.success(stockMyDataService.getPortfolio(userId, accountId));
+  }
+
+  @Operation(summary = "수익률 조회")
+  @GetMapping("/accounts/{accountId}/returns")
+  public ApiResponse<ReturnResponse> getReturns(
+      @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId) {
+
+    return ApiResponse.success(stockMyDataService.getReturns(userId, accountId));
   }
 }

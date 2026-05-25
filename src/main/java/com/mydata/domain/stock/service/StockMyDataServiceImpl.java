@@ -3,9 +3,11 @@ package com.mydata.domain.stock.service;
 import com.mydata.domain.stock.client.dto.response.StockAccountResponse;
 import com.mydata.domain.stock.client.dto.response.StockHoldingResponse;
 import com.mydata.domain.stock.client.dto.response.StockPortfolioResponse;
+import com.mydata.domain.stock.client.dto.response.StockReturnResponse;
 import com.mydata.domain.stock.client.internal.StockInternalClient;
 import com.mydata.domain.stock.dto.response.HoldingResponse;
 import com.mydata.domain.stock.dto.response.PortfolioResponse;
+import com.mydata.domain.stock.dto.response.ReturnResponse;
 import com.mydata.domain.stock.dto.response.StockAccountSummaryResponse;
 import com.mydata.domain.stock.exception.StockMyDataException;
 import com.mydata.domain.stock.mapper.StockMyDataMapper;
@@ -59,5 +61,17 @@ public class StockMyDataServiceImpl implements StockMyDataService {
     }
 
     return stockMyDataMapper.toPortfolioResponse(response.data());
+  }
+
+  @Override
+  public ReturnResponse getReturns(Long userId, Long accountId) {
+
+    ApiResponse<StockReturnResponse> response = stockInternalClient.getReturns(userId, accountId);
+
+    if (response == null || response.data() == null) {
+      throw new StockMyDataException(ErrorCode.STOCK_RETURN_NOT_FOUND);
+    }
+
+    return stockMyDataMapper.toReturnResponse(response.data());
   }
 }
