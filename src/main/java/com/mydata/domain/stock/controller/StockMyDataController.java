@@ -1,32 +1,29 @@
-package com.mydata.domain.bank.controller;
+package com.mydata.domain.stock.controller;
 
-import com.mydata.domain.bank.dto.request.TransactionSearchRequest;
-import com.mydata.domain.bank.dto.response.*;
-import com.mydata.domain.bank.service.BankMyDataService;
+import com.mydata.domain.stock.dto.response.*;
+import com.mydata.domain.stock.service.StockMyDataService;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Bank MyData API", description = "은행 마이데이터 API")
+@Tag(name = "Stock MyData API", description = "증권 마이데이터 API")
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mydata/v1/bank/accounts")
-public class BankMyDataController {
+@RequestMapping("/mydata/v1/stock")
+public class StockMyDataController {
 
-  private final BankMyDataService bankMyDataService;
+  private final StockMyDataService stockMyDataService;
 
-  @Operation(summary = "계좌 조회", description = "사용자의 전체 계좌 목록을 조회합니다.")
+  @Operation(summary = "주문 가능 계좌 조회")
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -42,19 +39,18 @@ public class BankMyDataController {
                               "success": true,
                               "data": [
                                 {
-                                  "accountId": 1001,
-                                  "accountNumber": "110-123-456789",
-                                  "accountName": "내 급여통장",
-                                  "bankCode": "088",
-                                  "balance": 3500000
+                                  "accountId": 2001,
+                                  "accountNumber": "300-123-456789",
+                                  "accountName": "내 주식 계좌",
+                                  "availableCash": 2800000
                                 }
                               ],
                               "meta": { "traceId": "uuid" }
                             }
                             """))),
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "500",
-        description = "은행 API 호출 오류",
+        responseCode = "404",
+        description = "증권 계좌 없음",
         content =
             @Content(
                 mediaType = "application/json",
@@ -64,114 +60,19 @@ public class BankMyDataController {
                             """
                             {
                               "success": false,
-                              "error": { "code": "BANK_500", "message": "은행 API 호출 중 오류가 발생했습니다." },
+                              "error": { "code": "STOCK_ACCOUNT_001", "message": "증권 계좌를 찾을 수 없습니다." },
                               "meta": { "traceId": "uuid" }
                             }
                             """)))
   })
-  @GetMapping
-  public ApiResponse<List<AccountSummaryResponse>> getAccounts(
+  @GetMapping("/accounts")
+  public ApiResponse<List<StockAccountSummaryResponse>> getAccounts(
       @RequestHeader("X-User-Id") Long userId) {
 
-    return ApiResponse.success(bankMyDataService.getAccounts(userId));
+    return ApiResponse.success(stockMyDataService.getAccounts(userId));
   }
 
-  @Operation(summary = "계좌 상세 조회")
-  @ApiResponses({
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "200",
-        description = "성공",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
-                            {
-                              "success": true,
-                              "data": {
-                                "accountId": 1001,
-                                "accountNumber": "110-123-456789",
-                                "accountName": "내 급여통장",
-                                "bankCode": "088",
-                                "accountStatus": "ACTIVE",
-                                "balance": 3500000
-                              },
-                              "meta": { "traceId": "uuid" }
-                            }
-                            """))),
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "404",
-        description = "계좌 없음",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
-                            {
-                              "success": false,
-                              "error": { "code": "ACCOUNT_001", "message": "계좌 없음" },
-                              "meta": { "traceId": "uuid" }
-                            }
-                            """)))
-  })
-  @GetMapping("/{accountId}")
-  public ApiResponse<AccountDetailResponse> getAccountDetail(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
-
-    return ApiResponse.success(bankMyDataService.getAccountDetail(userId, accountId));
-  }
-
-  @Operation(summary = "잔액 조회")
-  @ApiResponses({
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "200",
-        description = "성공",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
-                            {
-                              "success": true,
-                              "data": {
-                                "accountId": 1001,
-                                "balance": 3500000,
-                                "availableBalance": 3200000
-                              },
-                              "meta": { "traceId": "uuid" }
-                            }
-                            """))),
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "404",
-        description = "계좌 없음",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
-                            {
-                              "success": false,
-                              "error": { "code": "ACCOUNT_001", "message": "계좌 없음" },
-                              "meta": { "traceId": "uuid" }
-                            }
-                            """)))
-  })
-  @GetMapping("/{accountId}/balance")
-  public ApiResponse<BalanceResponse> getBalance(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
-
-    return ApiResponse.success(bankMyDataService.getBalance(userId, accountId));
-  }
-
-  @Operation(summary = "거래내역 조회", description = "계좌 거래내역을 조회합니다.")
+  @Operation(summary = "보유 종목 조회")
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -187,20 +88,21 @@ public class BankMyDataController {
                               "success": true,
                               "data": [
                                 {
-                                  "transactionId": 9001,
-                                  "transactionDateTime": "2026-05-01T09:00:00",
-                                  "transactionType": "DEPOSIT",
-                                  "amount": 3000000,
-                                  "balanceAfter": 3500000,
-                                  "description": "급여"
+                                  "stockCode": "005930",
+                                  "stockName": "삼성전자",
+                                  "quantity": 20,
+                                  "averagePrice": 78000,
+                                  "currentPrice": 82000,
+                                  "evaluationAmount": 1640000,
+                                  "profitRate": 5.12
                                 }
                               ],
                               "meta": { "traceId": "uuid" }
                             }
                             """))),
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "400",
-        description = "날짜 형식 오류",
+        responseCode = "404",
+        description = "보유 종목 없음",
         content =
             @Content(
                 mediaType = "application/json",
@@ -210,36 +112,19 @@ public class BankMyDataController {
                             """
                             {
                               "success": false,
-                              "error": { "code": "VALID_001", "message": "fromDate: 날짜 형식은 YYYY-MM-DD여야 합니다" },
+                              "error": { "code": "STOCK_HOLDING_001", "message": "보유 종목이 없습니다." },
                               "meta": { "traceId": "uuid" }
                             }
                             """)))
   })
-  @GetMapping("/{accountId}/transactions")
-  public ApiResponse<List<TransactionResponse>> getTransactions(
-      @RequestHeader("X-User-Id") Long userId,
-      @PathVariable @Positive Long accountId,
-      @RequestParam(required = false)
-          @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜 형식은 YYYY-MM-DD여야 합니다")
-          String fromDate,
-      @RequestParam(required = false)
-          @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜 형식은 YYYY-MM-DD여야 합니다")
-          String toDate,
-      @RequestParam(defaultValue = "0") @PositiveOrZero Integer page,
-      @RequestParam(defaultValue = "20") @Positive Integer size) {
+  @GetMapping("/accounts/{accountId}/holdings")
+  public ApiResponse<List<HoldingResponse>> getHoldings(
+      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
 
-    TransactionSearchRequest request =
-        TransactionSearchRequest.builder()
-            .fromDate(fromDate)
-            .toDate(toDate)
-            .page(page)
-            .size(size)
-            .build();
-
-    return ApiResponse.success(bankMyDataService.getTransactions(userId, accountId, request));
+    return ApiResponse.success(stockMyDataService.getHoldings(userId, accountId));
   }
 
-  @Operation(summary = "거래 카테고리 조회")
+  @Operation(summary = "포트폴리오 조회")
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -253,16 +138,18 @@ public class BankMyDataController {
                             """
                             {
                               "success": true,
-                              "data": [
-                                { "category": "급여", "amount": 3000000 },
-                                { "category": "식비", "amount": 280000 }
-                              ],
+                              "data": {
+                                "totalEvaluationAmount": 15000000,
+                                "totalPurchaseAmount": 13200000,
+                                "totalProfitAmount": 1800000,
+                                "totalProfitRate": 13.64
+                              },
                               "meta": { "traceId": "uuid" }
                             }
                             """))),
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "404",
-        description = "계좌 없음",
+        description = "포트폴리오 정보 없음",
         content =
             @Content(
                 mediaType = "application/json",
@@ -272,15 +159,110 @@ public class BankMyDataController {
                             """
                             {
                               "success": false,
-                              "error": { "code": "ACCOUNT_001", "message": "계좌 없음" },
+                              "error": { "code": "STOCK_PORTFOLIO_001", "message": "포트폴리오 정보가 없습니다." },
                               "meta": { "traceId": "uuid" }
                             }
                             """)))
   })
-  @GetMapping("/{accountId}/transactions/categories")
-  public ApiResponse<List<CategoryResponse>> getTransactionCategories(
+  @GetMapping("/accounts/{accountId}/portfolio")
+  public ApiResponse<PortfolioResponse> getPortfolio(
       @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
 
-    return ApiResponse.success(bankMyDataService.getTransactionCategories(userId, accountId));
+    return ApiResponse.success(stockMyDataService.getPortfolio(userId, accountId));
+  }
+
+  @Operation(summary = "수익률 조회")
+  @ApiResponses({
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "200",
+        description = "성공",
+        content =
+            @Content(
+                mediaType = "application/json",
+                examples =
+                    @ExampleObject(
+                        value =
+                            """
+                            {
+                              "success": true,
+                              "data": {
+                                "totalPurchaseAmount": 13200000,
+                                "totalEvaluationAmount": 15000000,
+                                "totalProfitAmount": 1800000,
+                                "totalProfitRate": 13.64
+                              },
+                              "meta": { "traceId": "uuid" }
+                            }
+                            """))),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "404",
+        description = "수익률 정보 없음",
+        content =
+            @Content(
+                mediaType = "application/json",
+                examples =
+                    @ExampleObject(
+                        value =
+                            """
+                            {
+                              "success": false,
+                              "error": { "code": "STOCK_RETURN_001", "message": "수익률 정보가 없습니다." },
+                              "meta": { "traceId": "uuid" }
+                            }
+                            """)))
+  })
+  @GetMapping("/accounts/{accountId}/returns")
+  public ApiResponse<ReturnResponse> getReturns(
+      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
+
+    return ApiResponse.success(stockMyDataService.getReturns(userId, accountId));
+  }
+
+  @Operation(summary = "전체 자산 요약 조회")
+  @ApiResponses({
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "200",
+        description = "성공",
+        content =
+            @Content(
+                mediaType = "application/json",
+                examples =
+                    @ExampleObject(
+                        value =
+                            """
+                            {
+                              "success": true,
+                              "data": {
+                                "totalAssetAmount": 18000000,
+                                "totalPurchaseAmount": 13200000,
+                                "totalEvaluationAmount": 15000000,
+                                "totalProfitAmount": 1800000,
+                                "totalProfitRate": 13.64
+                              },
+                              "meta": { "traceId": "uuid" }
+                            }
+                            """))),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "404",
+        description = "자산 요약 정보 없음",
+        content =
+            @Content(
+                mediaType = "application/json",
+                examples =
+                    @ExampleObject(
+                        value =
+                            """
+                            {
+                              "success": false,
+                              "error": { "code": "STOCK_ASSET_001", "message": "자산 요약 정보가 없습니다." },
+                              "meta": { "traceId": "uuid" }
+                            }
+                            """)))
+  })
+  @GetMapping("/assets/summary")
+  public ApiResponse<AssetSummaryResponse> getAssetSummary(
+      @RequestHeader("X-User-Id") Long userId) {
+
+    return ApiResponse.success(stockMyDataService.getAssetSummary(userId));
   }
 }
