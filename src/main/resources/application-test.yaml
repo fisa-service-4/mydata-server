@@ -1,3 +1,7 @@
 spring:
   application:
     name: mydata-server
+
+external:
+  baas:
+    url: http://localhost:8083

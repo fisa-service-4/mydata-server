@@ -81,6 +81,7 @@ public class GlobalExceptionHandler {
                 ErrorCode.MYDATA_003.getCode(), ErrorCode.MYDATA_003.getMessage(), traceId));
   }
 
+  @SuppressWarnings("java:S2221")
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
 

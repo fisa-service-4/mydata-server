@@ -32,9 +32,9 @@ public class StockMyDataServiceImpl implements StockMyDataService {
       return stockMyDataMapper.toStockAccountSummaryList(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new StockMyDataException(ErrorCode.STOCK_ACCOUNT_NOT_FOUND);
+      throw new StockMyDataException(ErrorCode.STOCK_ACCOUNT_NOT_FOUND, e);
     } catch (FeignException e) {
-      throw new StockMyDataException(ErrorCode.MYDATA_003);
+      throw new StockMyDataException(ErrorCode.MYDATA_003, e);
     }
   }
 
@@ -51,9 +51,9 @@ public class StockMyDataServiceImpl implements StockMyDataService {
       return stockMyDataMapper.toHoldingResponseList(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new StockMyDataException(ErrorCode.STOCK_HOLDING_NOT_FOUND);
+      throw new StockMyDataException(ErrorCode.STOCK_HOLDING_NOT_FOUND, e);
     } catch (FeignException e) {
-      throw new StockMyDataException(ErrorCode.MYDATA_003);
+      throw new StockMyDataException(ErrorCode.MYDATA_003, e);
     }
   }
 
@@ -70,9 +70,9 @@ public class StockMyDataServiceImpl implements StockMyDataService {
       return stockMyDataMapper.toPortfolioResponse(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new StockMyDataException(ErrorCode.STOCK_PORTFOLIO_NOT_FOUND);
+      throw new StockMyDataException(ErrorCode.STOCK_PORTFOLIO_NOT_FOUND, e);
     } catch (FeignException e) {
-      throw new StockMyDataException(ErrorCode.MYDATA_003);
+      throw new StockMyDataException(ErrorCode.MYDATA_003, e);
     }
   }
 
@@ -88,9 +88,9 @@ public class StockMyDataServiceImpl implements StockMyDataService {
       return stockMyDataMapper.toReturnResponse(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new StockMyDataException(ErrorCode.STOCK_RETURN_NOT_FOUND);
+      throw new StockMyDataException(ErrorCode.STOCK_RETURN_NOT_FOUND, e);
     } catch (FeignException e) {
-      throw new StockMyDataException(ErrorCode.MYDATA_003);
+      throw new StockMyDataException(ErrorCode.MYDATA_003, e);
     }
   }
 
@@ -106,9 +106,9 @@ public class StockMyDataServiceImpl implements StockMyDataService {
       return stockMyDataMapper.toAssetSummaryResponse(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new StockMyDataException(ErrorCode.STOCK_ASSET_SUMMARY_NOT_FOUND);
+      throw new StockMyDataException(ErrorCode.STOCK_ASSET_SUMMARY_NOT_FOUND, e);
     } catch (FeignException e) {
-      throw new StockMyDataException(ErrorCode.MYDATA_003);
+      throw new StockMyDataException(ErrorCode.MYDATA_003, e);
     }
   }
 }
