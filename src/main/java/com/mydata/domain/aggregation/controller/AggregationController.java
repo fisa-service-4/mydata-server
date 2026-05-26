@@ -2,6 +2,7 @@ package com.mydata.domain.aggregation.controller;
 
 import com.mydata.domain.aggregation.dto.response.AssetDistributionResponse;
 import com.mydata.domain.aggregation.dto.response.AssetSummaryResponse;
+import com.mydata.domain.aggregation.dto.response.DashboardResponse;
 import com.mydata.domain.aggregation.service.AggregationService;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,5 +35,12 @@ public class AggregationController {
       @RequestHeader("X-User-Id") Long userId) {
 
     return ApiResponse.success(aggregationService.getAssetDistribution(userId));
+  }
+
+  @Operation(summary = "통합 자산 대시보드 조회")
+  @GetMapping("/dashboard")
+  public ApiResponse<DashboardResponse> getDashboard(@RequestHeader("X-User-Id") Long userId) {
+
+    return ApiResponse.success(aggregationService.getDashboard(userId));
   }
 }
