@@ -20,6 +20,9 @@ public enum ErrorCode {
   // INTERNAL
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_001", "서버 내부 오류"),
 
+  // AGGREGATION
+  AGGREGATION_001(HttpStatus.INTERNAL_SERVER_ERROR, "AGGREGATION_001", "자산 집계 중 오류가 발생했습니다."),
+
   // BANK
   BANK_INTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "BANK_500", "은행 API 호출 중 오류가 발생했습니다."),
 

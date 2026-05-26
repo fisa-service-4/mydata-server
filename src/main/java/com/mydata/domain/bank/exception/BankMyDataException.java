@@ -8,4 +8,8 @@ public class BankMyDataException extends BusinessException {
   public BankMyDataException(ErrorCode errorCode) {
     super(errorCode);
   }
+
+  public BankMyDataException(ErrorCode errorCode, Throwable cause) {
+    super(errorCode, cause);
+  }
 }

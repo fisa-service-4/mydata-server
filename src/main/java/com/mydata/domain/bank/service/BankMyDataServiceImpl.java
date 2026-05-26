@@ -32,9 +32,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
       return bankMyDataMapper.toAccountSummaryList(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new BankMyDataException(ErrorCode.ACCOUNT_001);
+      throw new BankMyDataException(ErrorCode.ACCOUNT_001, e);
     } catch (FeignException e) {
-      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
+      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR, e);
     }
   }
 
@@ -51,9 +51,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
       return bankMyDataMapper.toAccountDetail(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new BankMyDataException(ErrorCode.ACCOUNT_001);
+      throw new BankMyDataException(ErrorCode.ACCOUNT_001, e);
     } catch (FeignException e) {
-      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
+      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR, e);
     }
   }
 
@@ -69,9 +69,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
       return bankMyDataMapper.toBalanceResponse(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new BankMyDataException(ErrorCode.ACCOUNT_001);
+      throw new BankMyDataException(ErrorCode.ACCOUNT_001, e);
     } catch (FeignException e) {
-      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
+      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR, e);
     }
   }
 
@@ -95,9 +95,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
       return bankMyDataMapper.toTransactionResponseList(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new BankMyDataException(ErrorCode.ACCOUNT_001);
+      throw new BankMyDataException(ErrorCode.ACCOUNT_001, e);
     } catch (FeignException e) {
-      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
+      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR, e);
     }
   }
 
@@ -114,9 +114,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
       return bankMyDataMapper.toCategoryResponseList(response.data());
 
     } catch (FeignException.NotFound e) {
-      throw new BankMyDataException(ErrorCode.ACCOUNT_001);
+      throw new BankMyDataException(ErrorCode.ACCOUNT_001, e);
     } catch (FeignException e) {
-      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
+      throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR, e);
     }
   }
 }

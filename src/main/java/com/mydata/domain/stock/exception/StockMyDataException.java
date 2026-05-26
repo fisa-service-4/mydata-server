@@ -8,4 +8,8 @@ public class StockMyDataException extends BusinessException {
   public StockMyDataException(ErrorCode errorCode) {
     super(errorCode);
   }
+
+  public StockMyDataException(ErrorCode errorCode, Throwable cause) {
+    super(errorCode, cause);
+  }
 }
