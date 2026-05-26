@@ -1,5 +1,6 @@
 package com.mydata.domain.aggregation.controller;
 
+import com.mydata.domain.aggregation.dto.response.AssetDistributionResponse;
 import com.mydata.domain.aggregation.dto.response.AssetSummaryResponse;
 import com.mydata.domain.aggregation.service.AggregationService;
 import com.mydata.global.response.ApiResponse;
@@ -25,5 +26,13 @@ public class AggregationController {
       @RequestHeader("X-User-Id") Long userId) {
 
     return ApiResponse.success(aggregationService.getAssetSummary(userId));
+  }
+
+  @Operation(summary = "자산 분포 조회")
+  @GetMapping("/distribution")
+  public ApiResponse<AssetDistributionResponse> getAssetDistribution(
+      @RequestHeader("X-User-Id") Long userId) {
+
+    return ApiResponse.success(aggregationService.getAssetDistribution(userId));
   }
 }

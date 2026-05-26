@@ -1,5 +1,6 @@
 package com.mydata.domain.aggregation.service;
 
+import com.mydata.domain.aggregation.dto.response.AssetDistributionResponse;
 import com.mydata.domain.aggregation.dto.response.AssetSummaryResponse;
 import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
 import com.mydata.domain.bank.service.BankMyDataService;
@@ -43,6 +44,39 @@ public class AggregationServiceImpl implements AggregationService {
         .totalBankAssetAmount(totalBankAssetAmount)
         .totalStockAssetAmount(totalStockAssetAmount)
         .investmentRatio(Math.round(investmentRatio * 100) / 100.0)
+        .build();
+  }
+
+  @Override
+  public AssetDistributionResponse getAssetDistribution(Long userId) {
+
+    List<AccountSummaryResponse> accounts = bankMyDataService.getAccounts(userId);
+
+    Long totalBankAssetAmount = accounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
+
+    com.mydata.domain.stock.dto.response.AssetSummaryResponse stockSummary =
+        stockMyDataService.getAssetSummary(userId);
+
+    Long totalStockAssetAmount = stockSummary.totalEvaluationAmount();
+
+    Long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
+
+    Double bankRatio = 0.0;
+    Double stockRatio = 0.0;
+
+    if (totalAssetAmount > 0) {
+
+      bankRatio = (totalBankAssetAmount.doubleValue() / totalAssetAmount.doubleValue()) * 100;
+
+      stockRatio = (totalStockAssetAmount.doubleValue() / totalAssetAmount.doubleValue()) * 100;
+    }
+
+    return AssetDistributionResponse.builder()
+        .totalAssetAmount(totalAssetAmount)
+        .totalBankAssetAmount(totalBankAssetAmount)
+        .totalStockAssetAmount(totalStockAssetAmount)
+        .bankRatio(Math.round(bankRatio * 100) / 100.0)
+        .stockRatio(Math.round(stockRatio * 100) / 100.0)
         .build();
   }
 }
