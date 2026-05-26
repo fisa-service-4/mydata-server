@@ -4,6 +4,7 @@ import com.mydata.domain.aggregation.dto.response.AssetDistributionResponse;
 import com.mydata.domain.aggregation.dto.response.DashboardResponse;
 import com.mydata.domain.aggregation.dto.response.TotalAssetSummaryResponse;
 import com.mydata.domain.aggregation.service.AggregationService;
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -85,7 +86,7 @@ public class AggregationController {
   })
   @GetMapping("/summary")
   public ApiResponse<TotalAssetSummaryResponse> getAssetSummary(
-      @RequestHeader("X-User-Id") @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
 
     return ApiResponse.success(aggregationService.getAssetSummary(userId));
   }
@@ -149,7 +150,7 @@ public class AggregationController {
   })
   @GetMapping("/distribution")
   public ApiResponse<AssetDistributionResponse> getAssetDistribution(
-      @RequestHeader("X-User-Id") @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
 
     return ApiResponse.success(aggregationService.getAssetDistribution(userId));
   }
@@ -217,7 +218,7 @@ public class AggregationController {
   })
   @GetMapping("/dashboard")
   public ApiResponse<DashboardResponse> getDashboard(
-      @RequestHeader("X-User-Id") @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
 
     return ApiResponse.success(aggregationService.getDashboard(userId));
   }

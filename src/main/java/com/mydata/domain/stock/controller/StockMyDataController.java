@@ -2,6 +2,7 @@ package com.mydata.domain.stock.controller;
 
 import com.mydata.domain.stock.dto.response.*;
 import com.mydata.domain.stock.service.StockMyDataService;
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -67,7 +68,7 @@ public class StockMyDataController {
   })
   @GetMapping("/accounts")
   public ApiResponse<List<StockAccountSummaryResponse>> getAccounts(
-      @RequestHeader("X-User-Id") Long userId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
 
     return ApiResponse.success(stockMyDataService.getAccounts(userId));
   }
@@ -119,7 +120,8 @@ public class StockMyDataController {
   })
   @GetMapping("/accounts/{accountId}/holdings")
   public ApiResponse<List<HoldingResponse>> getHoldings(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
+      @PathVariable @Positive Long accountId) {
 
     return ApiResponse.success(stockMyDataService.getHoldings(userId, accountId));
   }
@@ -166,7 +168,8 @@ public class StockMyDataController {
   })
   @GetMapping("/accounts/{accountId}/portfolio")
   public ApiResponse<PortfolioResponse> getPortfolio(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
+      @PathVariable @Positive Long accountId) {
 
     return ApiResponse.success(stockMyDataService.getPortfolio(userId, accountId));
   }
@@ -213,7 +216,8 @@ public class StockMyDataController {
   })
   @GetMapping("/accounts/{accountId}/returns")
   public ApiResponse<ReturnResponse> getReturns(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
+      @PathVariable @Positive Long accountId) {
 
     return ApiResponse.success(stockMyDataService.getReturns(userId, accountId));
   }
@@ -261,7 +265,7 @@ public class StockMyDataController {
   })
   @GetMapping("/assets/summary")
   public ApiResponse<AssetSummaryResponse> getAssetSummary(
-      @RequestHeader("X-User-Id") Long userId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
 
     return ApiResponse.success(stockMyDataService.getAssetSummary(userId));
   }
