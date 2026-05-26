@@ -2,6 +2,7 @@ package com.mydata.domain.bank.client.internal;
 
 import com.mydata.domain.bank.client.dto.response.*;
 import com.mydata.global.config.FeignConfig;
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -17,19 +18,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface BankInternalClient {
 
   @GetMapping("/baas/v1/bank/accounts")
-  ApiResponse<List<BankAccountResponse>> getAccounts(@RequestHeader("X-User-Id") Long userId);
+  ApiResponse<List<BankAccountResponse>> getAccounts(
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}")
   ApiResponse<BankAccountDetailResponse> getAccountDetail(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId);
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}/balance")
   ApiResponse<BankBalanceResponse> getBalance(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId);
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}/transactions")
   ApiResponse<List<BankTransactionResponse>> getTransactions(
-      @RequestHeader("X-User-Id") Long userId,
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId,
       @PathVariable Long accountId,
       @RequestParam(required = false) String fromDate,
       @RequestParam(required = false) String toDate,
@@ -38,5 +40,5 @@ public interface BankInternalClient {
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}/transactions/categories")
   ApiResponse<List<BankTransactionCategoryResponse>> getTransactionCategories(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable Long accountId);
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
 }

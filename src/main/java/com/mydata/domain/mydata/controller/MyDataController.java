@@ -1,9 +1,10 @@
-package com.mydata.domain.aggregation.controller;
+package com.mydata.domain.mydata.controller;
 
-import com.mydata.domain.aggregation.dto.response.AssetDistributionResponse;
-import com.mydata.domain.aggregation.dto.response.DashboardResponse;
-import com.mydata.domain.aggregation.dto.response.TotalAssetSummaryResponse;
-import com.mydata.domain.aggregation.service.AggregationService;
+import com.mydata.domain.mydata.dto.request.ConnectRequest;
+import com.mydata.domain.mydata.dto.response.ConnectResponse;
+import com.mydata.domain.mydata.dto.response.ConnectionResponse;
+import com.mydata.domain.mydata.dto.response.SyncResponse;
+import com.mydata.domain.mydata.service.MyDataService;
 import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,24 +12,27 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Aggregation API", description = "통합 자산 Aggregation API")
+@Tag(name = "MyData API", description = "마이데이터 연동 API")
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mydata/v1/assets")
-public class AggregationController {
+@RequestMapping("/mydata/v1")
+public class MyDataController {
 
-  private final AggregationService aggregationService;
+  private final MyDataService myDataService;
 
-  @Operation(summary = "통합 자산 요약 조회", description = "은행/증권 자산을 합산한 통합 자산 요약을 조회합니다.")
+  @Operation(summary = "마이데이터 연동", description = "금융기관과의 마이데이터 연동을 요청합니다.")
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -43,10 +47,9 @@ public class AggregationController {
                             {
                               "success": true,
                               "data": {
-                                "totalAssetAmount": 18000000,
-                                "totalBankAssetAmount": 3000000,
-                                "totalStockAssetAmount": 15000000,
-                                "investmentRatio": 83.33
+                                "connected": true,
+                                "bankLinked": true,
+                                "stockLinked": false
                               },
                               "meta": { "traceId": "uuid" }
                             }
@@ -66,32 +69,17 @@ public class AggregationController {
                               "error": { "code": "VALID_001", "message": "X-User-Id 헤더가 필요합니다" },
                               "meta": { "traceId": "uuid" }
                             }
-                            """))),
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "500",
-        description = "마이데이터 연동 실패",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
-                            {
-                              "success": false,
-                              "error": { "code": "MYDATA_003", "message": "마이데이터 연동 실패" },
-                              "meta": { "traceId": "uuid" }
-                            }
                             """)))
   })
-  @GetMapping("/summary")
-  public ApiResponse<TotalAssetSummaryResponse> getAssetSummary(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+  @PostMapping("/connect")
+  public ApiResponse<ConnectResponse> connect(
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
+      @Valid @RequestBody ConnectRequest request) {
 
-    return ApiResponse.success(aggregationService.getAssetSummary(userId));
+    return ApiResponse.success(myDataService.connect(userId, request));
   }
 
-  @Operation(summary = "자산 분포 조회", description = "은행/증권 자산 비율 분포를 조회합니다.")
+  @Operation(summary = "연동 목록 조회", description = "현재 연동된 금융 계좌 목록을 조회합니다.")
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -106,11 +94,16 @@ public class AggregationController {
                             {
                               "success": true,
                               "data": {
-                                "totalAssetAmount": 18000000,
-                                "totalBankAssetAmount": 3000000,
-                                "totalStockAssetAmount": 15000000,
-                                "bankRatio": 16.67,
-                                "stockRatio": 83.33
+                                "bankAccounts": [
+                                  {
+                                    "accountId": 1001,
+                                    "accountNumber": "110-123-456789",
+                                    "accountName": "내 급여통장",
+                                    "bankCode": "088",
+                                    "balance": 3500000
+                                  }
+                                ],
+                                "stockAccounts": []
                               },
                               "meta": { "traceId": "uuid" }
                             }
@@ -130,34 +123,16 @@ public class AggregationController {
                               "error": { "code": "VALID_001", "message": "X-User-Id 헤더가 필요합니다" },
                               "meta": { "traceId": "uuid" }
                             }
-                            """))),
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "500",
-        description = "마이데이터 연동 실패",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
-                            {
-                              "success": false,
-                              "error": { "code": "MYDATA_003", "message": "마이데이터 연동 실패" },
-                              "meta": { "traceId": "uuid" }
-                            }
                             """)))
   })
-  @GetMapping("/distribution")
-  public ApiResponse<AssetDistributionResponse> getAssetDistribution(
+  @GetMapping("/connections")
+  public ApiResponse<ConnectionResponse> getConnections(
       @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
 
-    return ApiResponse.success(aggregationService.getAssetDistribution(userId));
+    return ApiResponse.success(myDataService.getConnections(userId));
   }
 
-  @Operation(
-      summary = "통합 자산 대시보드 조회",
-      description = "총 자산, 계좌 수, 보유 종목 수, 수익률을 포함한 대시보드 데이터를 조회합니다.")
+  @Operation(summary = "마이데이터 동기화", description = "은행/증권 마이데이터를 최신 상태로 동기화합니다.")
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -172,13 +147,8 @@ public class AggregationController {
                             {
                               "success": true,
                               "data": {
-                                "totalAssetAmount": 18000000,
-                                "totalBankAssetAmount": 3000000,
-                                "totalStockAssetAmount": 15000000,
-                                "investmentRatio": 83.33,
-                                "bankAccountCount": 2,
-                                "holdingCount": 5,
-                                "totalProfitRate": 13.64
+                                "synced": true,
+                                "syncedAt": "2026-05-26T10:00:00"
                               },
                               "meta": { "traceId": "uuid" }
                             }
@@ -198,28 +168,12 @@ public class AggregationController {
                               "error": { "code": "VALID_001", "message": "X-User-Id 헤더가 필요합니다" },
                               "meta": { "traceId": "uuid" }
                             }
-                            """))),
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "500",
-        description = "마이데이터 연동 실패",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
-                            {
-                              "success": false,
-                              "error": { "code": "MYDATA_003", "message": "마이데이터 연동 실패" },
-                              "meta": { "traceId": "uuid" }
-                            }
                             """)))
   })
-  @GetMapping("/dashboard")
-  public ApiResponse<DashboardResponse> getDashboard(
+  @PostMapping("/sync")
+  public ApiResponse<SyncResponse> sync(
       @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
 
-    return ApiResponse.success(aggregationService.getDashboard(userId));
+    return ApiResponse.success(myDataService.sync(userId));
   }
 }

@@ -3,6 +3,7 @@ package com.mydata.domain.bank.controller;
 import com.mydata.domain.bank.dto.request.TransactionSearchRequest;
 import com.mydata.domain.bank.dto.response.*;
 import com.mydata.domain.bank.service.BankMyDataService;
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -71,7 +72,7 @@ public class BankMyDataController {
   })
   @GetMapping
   public ApiResponse<List<AccountSummaryResponse>> getAccounts(
-      @RequestHeader("X-User-Id") Long userId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
 
     return ApiResponse.success(bankMyDataService.getAccounts(userId));
   }
@@ -120,7 +121,8 @@ public class BankMyDataController {
   })
   @GetMapping("/{accountId}")
   public ApiResponse<AccountDetailResponse> getAccountDetail(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
+      @PathVariable @Positive Long accountId) {
 
     return ApiResponse.success(bankMyDataService.getAccountDetail(userId, accountId));
   }
@@ -166,7 +168,8 @@ public class BankMyDataController {
   })
   @GetMapping("/{accountId}/balance")
   public ApiResponse<BalanceResponse> getBalance(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
+      @PathVariable @Positive Long accountId) {
 
     return ApiResponse.success(bankMyDataService.getBalance(userId, accountId));
   }
@@ -217,7 +220,7 @@ public class BankMyDataController {
   })
   @GetMapping("/{accountId}/transactions")
   public ApiResponse<List<TransactionResponse>> getTransactions(
-      @RequestHeader("X-User-Id") Long userId,
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
       @PathVariable @Positive Long accountId,
       @RequestParam(required = false)
           @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜 형식은 YYYY-MM-DD여야 합니다")
@@ -279,7 +282,8 @@ public class BankMyDataController {
   })
   @GetMapping("/{accountId}/transactions/categories")
   public ApiResponse<List<CategoryResponse>> getTransactionCategories(
-      @RequestHeader("X-User-Id") Long userId, @PathVariable @Positive Long accountId) {
+      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
+      @PathVariable @Positive Long accountId) {
 
     return ApiResponse.success(bankMyDataService.getTransactionCategories(userId, accountId));
   }
