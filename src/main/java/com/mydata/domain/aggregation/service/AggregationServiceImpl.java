@@ -1,13 +1,15 @@
 package com.mydata.domain.aggregation.service;
 
 import com.mydata.domain.aggregation.dto.response.AssetDistributionResponse;
-import com.mydata.domain.aggregation.dto.response.AssetSummaryResponse;
 import com.mydata.domain.aggregation.dto.response.DashboardResponse;
+import com.mydata.domain.aggregation.dto.response.TotalAssetSummaryResponse;
 import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
 import com.mydata.domain.bank.service.BankMyDataService;
-import com.mydata.domain.stock.dto.response.HoldingResponse;
+import com.mydata.domain.stock.dto.response.AssetSummaryResponse;
 import com.mydata.domain.stock.dto.response.StockAccountSummaryResponse;
+import com.mydata.domain.stock.exception.StockMyDataException;
 import com.mydata.domain.stock.service.StockMyDataService;
+import com.mydata.global.exception.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,122 +19,127 @@ import org.springframework.stereotype.Service;
 public class AggregationServiceImpl implements AggregationService {
 
   private final BankMyDataService bankMyDataService;
-
   private final StockMyDataService stockMyDataService;
 
   @Override
-  public AssetSummaryResponse getAssetSummary(Long userId) {
+  public TotalAssetSummaryResponse getAssetSummary(Long userId) {
+    long totalBankAssetAmount = sumBankBalance(userId);
+    long totalStockAssetAmount = fetchStockEvaluationAmount(userId);
+    long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
-    List<AccountSummaryResponse> accounts = bankMyDataService.getAccounts(userId);
-
-    Long totalBankAssetAmount = accounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
-
-    com.mydata.domain.stock.dto.response.AssetSummaryResponse stockSummary =
-        stockMyDataService.getAssetSummary(userId);
-
-    Long totalStockAssetAmount = stockSummary.totalEvaluationAmount();
-
-    Long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
-
-    Double investmentRatio = 0.0;
-
-    if (totalAssetAmount > 0) {
-
-      investmentRatio =
-          (totalStockAssetAmount.doubleValue() / totalAssetAmount.doubleValue()) * 100;
-    }
-
-    return AssetSummaryResponse.builder()
+    return TotalAssetSummaryResponse.builder()
         .totalAssetAmount(totalAssetAmount)
         .totalBankAssetAmount(totalBankAssetAmount)
         .totalStockAssetAmount(totalStockAssetAmount)
-        .investmentRatio(Math.round(investmentRatio * 100) / 100.0)
+        .investmentRatio(computeRatio(totalStockAssetAmount, totalAssetAmount))
         .build();
   }
 
   @Override
   public AssetDistributionResponse getAssetDistribution(Long userId) {
-
-    List<AccountSummaryResponse> accounts = bankMyDataService.getAccounts(userId);
-
-    Long totalBankAssetAmount = accounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
-
-    com.mydata.domain.stock.dto.response.AssetSummaryResponse stockSummary =
-        stockMyDataService.getAssetSummary(userId);
-
-    Long totalStockAssetAmount = stockSummary.totalEvaluationAmount();
-
-    Long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
-
-    Double bankRatio = 0.0;
-    Double stockRatio = 0.0;
-
-    if (totalAssetAmount > 0) {
-
-      bankRatio = (totalBankAssetAmount.doubleValue() / totalAssetAmount.doubleValue()) * 100;
-
-      stockRatio = (totalStockAssetAmount.doubleValue() / totalAssetAmount.doubleValue()) * 100;
-    }
+    long totalBankAssetAmount = sumBankBalance(userId);
+    long totalStockAssetAmount = fetchStockEvaluationAmount(userId);
+    long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
     return AssetDistributionResponse.builder()
         .totalAssetAmount(totalAssetAmount)
         .totalBankAssetAmount(totalBankAssetAmount)
         .totalStockAssetAmount(totalStockAssetAmount)
-        .bankRatio(Math.round(bankRatio * 100) / 100.0)
-        .stockRatio(Math.round(stockRatio * 100) / 100.0)
+        .bankRatio(computeRatio(totalBankAssetAmount, totalAssetAmount))
+        .stockRatio(computeRatio(totalStockAssetAmount, totalAssetAmount))
         .build();
   }
 
   @Override
   public DashboardResponse getDashboard(Long userId) {
+    // 은행 계좌 조회 (잔액 합산 + 계좌 수 동시 처리)
+    List<AccountSummaryResponse> bankAccounts = bankMyDataService.getAccounts(userId);
+    long totalBankAssetAmount =
+        bankAccounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
+    int bankAccountCount = bankAccounts.size();
 
-    // 은행 계좌 조회
-    List<AccountSummaryResponse> accounts = bankMyDataService.getAccounts(userId);
-
-    Long totalBankAssetAmount = accounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
-
-    Integer bankAccountCount = accounts.size();
-
-    // 주식 자산 조회
-    com.mydata.domain.stock.dto.response.AssetSummaryResponse stockSummary =
-        stockMyDataService.getAssetSummary(userId);
-
-    Long totalStockAssetAmount = stockSummary.totalEvaluationAmount();
-
+    // 증권 자산 조회 (미보유 시 0으로 기본값 처리)
+    var stockSummary = fetchStockSummaryOrDefault(userId);
+    long totalStockAssetAmount = stockSummary.totalEvaluationAmount();
     Double totalProfitRate = stockSummary.totalProfitRate();
 
-    // 보유 종목 수 계산
-    Integer holdingCount = 0;
+    // 보유 종목 수 집계 (BaaS holdingCount 스펙 미지원으로 인한 N+1 임시 구현)
+    int holdingCount = countHoldings(userId);
 
-    List<StockAccountSummaryResponse> stockAccounts = stockMyDataService.getAccounts(userId);
-
-    for (StockAccountSummaryResponse account : stockAccounts) {
-
-      List<HoldingResponse> holdings = stockMyDataService.getHoldings(userId, account.accountId());
-
-      holdingCount += holdings.size();
-    }
-
-    // 총 자산 계산
-    Long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
-
-    // 투자 비율 계산
-    Double investmentRatio = 0.0;
-
-    if (totalAssetAmount > 0) {
-
-      investmentRatio =
-          (totalStockAssetAmount.doubleValue() / totalAssetAmount.doubleValue()) * 100;
-    }
+    long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
     return DashboardResponse.builder()
         .totalAssetAmount(totalAssetAmount)
         .totalBankAssetAmount(totalBankAssetAmount)
         .totalStockAssetAmount(totalStockAssetAmount)
-        .investmentRatio(Math.round(investmentRatio * 100) / 100.0)
+        .investmentRatio(computeRatio(totalStockAssetAmount, totalAssetAmount))
         .bankAccountCount(bankAccountCount)
         .holdingCount(holdingCount)
         .totalProfitRate(totalProfitRate)
         .build();
+  }
+
+  // --- private helpers ---
+
+  /** 은행 전체 계좌 잔액 합산 */
+  private long sumBankBalance(Long userId) {
+    return bankMyDataService.getAccounts(userId).stream()
+        .mapToLong(AccountSummaryResponse::balance)
+        .sum();
+  }
+
+  /** 증권 평가 금액 조회 (미보유 시 0 반환) */
+  private long fetchStockEvaluationAmount(Long userId) {
+    return fetchStockSummaryOrDefault(userId).totalEvaluationAmount();
+  }
+
+  /** 증권 자산 요약 조회. 증권 계좌/자산이 없는 경우 0으로 채운 기본값을 반환하여 집계 API가 실패하지 않도록 처리. */
+  private AssetSummaryResponse fetchStockSummaryOrDefault(Long userId) {
+    try {
+      return stockMyDataService.getAssetSummary(userId);
+    } catch (StockMyDataException e) {
+      if (ErrorCode.STOCK_ASSET_SUMMARY_NOT_FOUND.equals(e.getErrorCode())) {
+        return AssetSummaryResponse.builder()
+            .totalAssetAmount(0L)
+            .totalPurchaseAmount(0L)
+            .totalEvaluationAmount(0L)
+            .totalProfitAmount(0L)
+            .totalProfitRate(0.0)
+            .build();
+      }
+      throw e;
+    }
+  }
+
+  /** 전체 증권 계좌의 보유 종목 수 합산. 계좌/종목이 없는 경우 0 반환. */
+  private int countHoldings(Long userId) {
+    try {
+      List<StockAccountSummaryResponse> stockAccounts = stockMyDataService.getAccounts(userId);
+      int count = 0;
+      for (StockAccountSummaryResponse account : stockAccounts) {
+        count += stockMyDataService.getHoldings(userId, account.accountId()).size();
+      }
+      return count;
+    } catch (StockMyDataException e) {
+      if (ErrorCode.STOCK_ACCOUNT_NOT_FOUND.equals(e.getErrorCode())
+          || ErrorCode.STOCK_HOLDING_NOT_FOUND.equals(e.getErrorCode())) {
+        return 0;
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * part / total * 100 을 소수점 둘째 자리로 반올림.
+   *
+   * @param part 분자 (부분 금액)
+   * @param total 분모 (전체 금액)
+   * @return 비율 (%), total &lt;= 0 이면 0.0 반환
+   */
+  private static double computeRatio(long part, long total) {
+    if (total <= 0) {
+      return 0.0;
+    }
+    return Math.round(((double) part / total) * 100 * 100) / 100.0;
   }
 }
