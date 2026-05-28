@@ -5,13 +5,13 @@ import java.util.List;
 
 public interface StockMyDataService {
 
-  List<StockAccountSummaryResponse> getAccounts(Long userId);
+  List<StockAccountSummaryResponse> getAccounts(String firebaseUid);
 
-  List<HoldingResponse> getHoldings(Long userId, Long accountId);
+  List<HoldingResponse> getHoldings(Long accountId);
 
-  PortfolioResponse getPortfolio(Long userId, Long accountId);
+  PortfolioResponse getPortfolio(Long accountId);
 
-  ReturnResponse getReturns(Long userId, Long accountId);
+  ReturnResponse getReturns(Long accountId);
 
-  AssetSummaryResponse getAssetSummary(Long userId);
+  AssetSummaryResponse getAssetSummary(String firebaseUid);
 }

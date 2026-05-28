@@ -72,9 +72,9 @@ public class BankMyDataController {
   })
   @GetMapping
   public ApiResponse<List<AccountSummaryResponse>> getAccounts(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(bankMyDataService.getAccounts(userId));
+    return ApiResponse.success(bankMyDataService.getAccounts(firebaseUid));
   }
 
   @Operation(summary = "계좌 상세 조회")
@@ -121,10 +121,9 @@ public class BankMyDataController {
   })
   @GetMapping("/{accountId}")
   public ApiResponse<AccountDetailResponse> getAccountDetail(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
       @PathVariable @Positive Long accountId) {
 
-    return ApiResponse.success(bankMyDataService.getAccountDetail(userId, accountId));
+    return ApiResponse.success(bankMyDataService.getAccountDetail(accountId));
   }
 
   @Operation(summary = "잔액 조회")
@@ -167,11 +166,9 @@ public class BankMyDataController {
                             """)))
   })
   @GetMapping("/{accountId}/balance")
-  public ApiResponse<BalanceResponse> getBalance(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
-      @PathVariable @Positive Long accountId) {
+  public ApiResponse<BalanceResponse> getBalance(@PathVariable @Positive Long accountId) {
 
-    return ApiResponse.success(bankMyDataService.getBalance(userId, accountId));
+    return ApiResponse.success(bankMyDataService.getBalance(accountId));
   }
 
   @Operation(summary = "거래내역 조회", description = "계좌 거래내역을 조회합니다.")
@@ -220,7 +217,6 @@ public class BankMyDataController {
   })
   @GetMapping("/{accountId}/transactions")
   public ApiResponse<List<TransactionResponse>> getTransactions(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
       @PathVariable @Positive Long accountId,
       @RequestParam(required = false)
           @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜 형식은 YYYY-MM-DD여야 합니다")
@@ -239,7 +235,7 @@ public class BankMyDataController {
             .size(size)
             .build();
 
-    return ApiResponse.success(bankMyDataService.getTransactions(userId, accountId, request));
+    return ApiResponse.success(bankMyDataService.getTransactions(accountId, request));
   }
 
   @Operation(summary = "거래 카테고리 조회")
@@ -282,9 +278,8 @@ public class BankMyDataController {
   })
   @GetMapping("/{accountId}/transactions/categories")
   public ApiResponse<List<CategoryResponse>> getTransactionCategories(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
       @PathVariable @Positive Long accountId) {
 
-    return ApiResponse.success(bankMyDataService.getTransactionCategories(userId, accountId));
+    return ApiResponse.success(bankMyDataService.getTransactionCategories(accountId));
   }
 }

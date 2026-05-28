@@ -6,9 +6,9 @@ import com.mydata.domain.aggregation.dto.response.TotalAssetSummaryResponse;
 
 public interface AggregationService {
 
-  TotalAssetSummaryResponse getAssetSummary(Long userId);
+  TotalAssetSummaryResponse getAssetSummary(String firebaseUid);
 
-  AssetDistributionResponse getAssetDistribution(Long userId);
+  AssetDistributionResponse getAssetDistribution(String firebaseUid);
 
-  DashboardResponse getDashboard(Long userId);
+  DashboardResponse getDashboard(String firebaseUid);
 }

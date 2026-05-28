@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,10 +72,10 @@ public class MyDataController {
   })
   @PostMapping("/connect")
   public ApiResponse<ConnectResponse> connect(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid,
       @Valid @RequestBody ConnectRequest request) {
 
-    return ApiResponse.success(myDataService.connect(userId, request));
+    return ApiResponse.success(myDataService.connect(request, firebaseUid));
   }
 
   @Operation(summary = "연동 목록 조회", description = "현재 연동된 금융 계좌 목록을 조회합니다.")
@@ -127,9 +126,9 @@ public class MyDataController {
   })
   @GetMapping("/connections")
   public ApiResponse<ConnectionResponse> getConnections(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(myDataService.getConnections(userId));
+    return ApiResponse.success(myDataService.getConnections(firebaseUid));
   }
 
   @Operation(summary = "마이데이터 동기화", description = "은행/증권 마이데이터를 최신 상태로 동기화합니다.")
@@ -172,8 +171,8 @@ public class MyDataController {
   })
   @PostMapping("/sync")
   public ApiResponse<SyncResponse> sync(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(myDataService.sync(userId));
+    return ApiResponse.success(myDataService.sync(firebaseUid));
   }
 }

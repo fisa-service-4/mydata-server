@@ -19,19 +19,16 @@ public interface BankInternalClient {
 
   @GetMapping("/baas/v1/bank/accounts")
   ApiResponse<List<BankAccountResponse>> getAccounts(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId);
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}")
-  ApiResponse<BankAccountDetailResponse> getAccountDetail(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
+  ApiResponse<BankAccountDetailResponse> getAccountDetail(@PathVariable Long accountId);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}/balance")
-  ApiResponse<BankBalanceResponse> getBalance(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
+  ApiResponse<BankBalanceResponse> getBalance(@PathVariable Long accountId);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}/transactions")
   ApiResponse<List<BankTransactionResponse>> getTransactions(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId,
       @PathVariable Long accountId,
       @RequestParam(required = false) String fromDate,
       @RequestParam(required = false) String toDate,
@@ -40,5 +37,5 @@ public interface BankInternalClient {
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}/transactions/categories")
   ApiResponse<List<BankTransactionCategoryResponse>> getTransactionCategories(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
+      @PathVariable Long accountId);
 }

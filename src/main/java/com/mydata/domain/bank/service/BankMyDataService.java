@@ -6,14 +6,13 @@ import java.util.List;
 
 public interface BankMyDataService {
 
-  List<AccountSummaryResponse> getAccounts(Long userId);
+  List<AccountSummaryResponse> getAccounts(String firebaseUid);
 
-  AccountDetailResponse getAccountDetail(Long userId, Long accountId);
+  AccountDetailResponse getAccountDetail(Long accountId);
 
-  BalanceResponse getBalance(Long userId, Long accountId);
+  BalanceResponse getBalance(Long accountId);
 
-  List<TransactionResponse> getTransactions(
-      Long userId, Long accountId, TransactionSearchRequest request);
+  List<TransactionResponse> getTransactions(Long accountId, TransactionSearchRequest request);
 
-  List<CategoryResponse> getTransactionCategories(Long userId, Long accountId);
+  List<CategoryResponse> getTransactionCategories(Long accountId);
 }

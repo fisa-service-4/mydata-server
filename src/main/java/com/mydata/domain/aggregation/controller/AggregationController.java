@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,9 +85,9 @@ public class AggregationController {
   })
   @GetMapping("/summary")
   public ApiResponse<TotalAssetSummaryResponse> getAssetSummary(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(aggregationService.getAssetSummary(userId));
+    return ApiResponse.success(aggregationService.getAssetSummary(firebaseUid));
   }
 
   @Operation(summary = "자산 분포 조회", description = "은행/증권 자산 비율 분포를 조회합니다.")
@@ -150,9 +149,9 @@ public class AggregationController {
   })
   @GetMapping("/distribution")
   public ApiResponse<AssetDistributionResponse> getAssetDistribution(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(aggregationService.getAssetDistribution(userId));
+    return ApiResponse.success(aggregationService.getAssetDistribution(firebaseUid));
   }
 
   @Operation(
@@ -218,8 +217,8 @@ public class AggregationController {
   })
   @GetMapping("/dashboard")
   public ApiResponse<DashboardResponse> getDashboard(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(aggregationService.getDashboard(userId));
+    return ApiResponse.success(aggregationService.getDashboard(firebaseUid));
   }
 }

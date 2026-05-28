@@ -18,21 +18,18 @@ public interface StockInternalClient {
 
   @GetMapping("/baas/v1/stock/accounts")
   ApiResponse<List<StockAccountResponse>> getAccounts(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId);
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid);
 
   @GetMapping("/baas/v1/stock/accounts/{accountId}/holdings")
-  ApiResponse<List<StockHoldingResponse>> getHoldings(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
+  ApiResponse<List<StockHoldingResponse>> getHoldings(@PathVariable Long accountId);
 
   @GetMapping("/baas/v1/stock/accounts/{accountId}/portfolio")
-  ApiResponse<StockPortfolioResponse> getPortfolio(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
+  ApiResponse<StockPortfolioResponse> getPortfolio(@PathVariable Long accountId);
 
   @GetMapping("/baas/v1/stock/accounts/{accountId}/returns")
-  ApiResponse<StockReturnResponse> getReturns(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId, @PathVariable Long accountId);
+  ApiResponse<StockReturnResponse> getReturns(@PathVariable Long accountId);
 
   @GetMapping("/baas/v1/stock/assets/summary")
   ApiResponse<StockAssetSummaryResponse> getAssetSummary(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) Long userId);
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid);
 }

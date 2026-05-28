@@ -21,9 +21,10 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   private final StockMyDataMapper stockMyDataMapper;
 
   @Override
-  public List<StockAccountSummaryResponse> getAccounts(Long userId) {
+  public List<StockAccountSummaryResponse> getAccounts(String firebaseUid) {
     try {
-      ApiResponse<List<StockAccountResponse>> response = stockInternalClient.getAccounts(userId);
+      ApiResponse<List<StockAccountResponse>> response =
+          stockInternalClient.getAccounts(firebaseUid);
 
       if (response == null || response.data() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_ACCOUNT_NOT_FOUND);
@@ -39,10 +40,9 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   }
 
   @Override
-  public List<HoldingResponse> getHoldings(Long userId, Long accountId) {
+  public List<HoldingResponse> getHoldings(Long accountId) {
     try {
-      ApiResponse<List<StockHoldingResponse>> response =
-          stockInternalClient.getHoldings(userId, accountId);
+      ApiResponse<List<StockHoldingResponse>> response = stockInternalClient.getHoldings(accountId);
 
       if (response == null || response.data() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_HOLDING_NOT_FOUND);
@@ -58,10 +58,9 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   }
 
   @Override
-  public PortfolioResponse getPortfolio(Long userId, Long accountId) {
+  public PortfolioResponse getPortfolio(Long accountId) {
     try {
-      ApiResponse<StockPortfolioResponse> response =
-          stockInternalClient.getPortfolio(userId, accountId);
+      ApiResponse<StockPortfolioResponse> response = stockInternalClient.getPortfolio(accountId);
 
       if (response == null || response.data() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_PORTFOLIO_NOT_FOUND);
@@ -77,9 +76,9 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   }
 
   @Override
-  public ReturnResponse getReturns(Long userId, Long accountId) {
+  public ReturnResponse getReturns(Long accountId) {
     try {
-      ApiResponse<StockReturnResponse> response = stockInternalClient.getReturns(userId, accountId);
+      ApiResponse<StockReturnResponse> response = stockInternalClient.getReturns(accountId);
 
       if (response == null || response.data() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_RETURN_NOT_FOUND);
@@ -95,9 +94,10 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   }
 
   @Override
-  public AssetSummaryResponse getAssetSummary(Long userId) {
+  public AssetSummaryResponse getAssetSummary(String firebaseUid) {
     try {
-      ApiResponse<StockAssetSummaryResponse> response = stockInternalClient.getAssetSummary(userId);
+      ApiResponse<StockAssetSummaryResponse> response =
+          stockInternalClient.getAssetSummary(firebaseUid);
 
       if (response == null || response.data() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_ASSET_SUMMARY_NOT_FOUND);

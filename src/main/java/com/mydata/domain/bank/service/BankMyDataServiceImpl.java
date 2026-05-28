@@ -21,9 +21,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
   private final BankMyDataMapper bankMyDataMapper;
 
   @Override
-  public List<AccountSummaryResponse> getAccounts(Long userId) {
+  public List<AccountSummaryResponse> getAccounts(String firebaseUid) {
     try {
-      ApiResponse<List<BankAccountResponse>> response = bankInternalClient.getAccounts(userId);
+      ApiResponse<List<BankAccountResponse>> response = bankInternalClient.getAccounts(firebaseUid);
 
       if (response == null || response.data() == null) {
         throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
@@ -39,10 +39,10 @@ public class BankMyDataServiceImpl implements BankMyDataService {
   }
 
   @Override
-  public AccountDetailResponse getAccountDetail(Long userId, Long accountId) {
+  public AccountDetailResponse getAccountDetail(Long accountId) {
     try {
       ApiResponse<BankAccountDetailResponse> response =
-          bankInternalClient.getAccountDetail(userId, accountId);
+          bankInternalClient.getAccountDetail(accountId);
 
       if (response == null || response.data() == null) {
         throw new BankMyDataException(ErrorCode.ACCOUNT_001);
@@ -58,9 +58,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
   }
 
   @Override
-  public BalanceResponse getBalance(Long userId, Long accountId) {
+  public BalanceResponse getBalance(Long accountId) {
     try {
-      ApiResponse<BankBalanceResponse> response = bankInternalClient.getBalance(userId, accountId);
+      ApiResponse<BankBalanceResponse> response = bankInternalClient.getBalance(accountId);
 
       if (response == null || response.data() == null) {
         throw new BankMyDataException(ErrorCode.ACCOUNT_001);
@@ -77,16 +77,11 @@ public class BankMyDataServiceImpl implements BankMyDataService {
 
   @Override
   public List<TransactionResponse> getTransactions(
-      Long userId, Long accountId, TransactionSearchRequest request) {
+      Long accountId, TransactionSearchRequest request) {
     try {
       ApiResponse<List<BankTransactionResponse>> response =
           bankInternalClient.getTransactions(
-              userId,
-              accountId,
-              request.fromDate(),
-              request.toDate(),
-              request.page(),
-              request.size());
+              accountId, request.fromDate(), request.toDate(), request.page(), request.size());
 
       if (response == null || response.data() == null) {
         throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
@@ -102,10 +97,10 @@ public class BankMyDataServiceImpl implements BankMyDataService {
   }
 
   @Override
-  public List<CategoryResponse> getTransactionCategories(Long userId, Long accountId) {
+  public List<CategoryResponse> getTransactionCategories(Long accountId) {
     try {
       ApiResponse<List<BankTransactionCategoryResponse>> response =
-          bankInternalClient.getTransactionCategories(userId, accountId);
+          bankInternalClient.getTransactionCategories(accountId);
 
       if (response == null || response.data() == null) {
         throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
