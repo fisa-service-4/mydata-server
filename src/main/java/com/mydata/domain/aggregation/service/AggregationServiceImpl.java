@@ -22,9 +22,9 @@ public class AggregationServiceImpl implements AggregationService {
   private final StockMyDataService stockMyDataService;
 
   @Override
-  public TotalAssetSummaryResponse getAssetSummary() {
-    long totalBankAssetAmount = sumBankBalance();
-    long totalStockAssetAmount = fetchStockEvaluationAmount();
+  public TotalAssetSummaryResponse getAssetSummary(String firebaseUid) {
+    long totalBankAssetAmount = sumBankBalance(firebaseUid);
+    long totalStockAssetAmount = fetchStockEvaluationAmount(firebaseUid);
     long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
     return TotalAssetSummaryResponse.builder()
@@ -36,9 +36,9 @@ public class AggregationServiceImpl implements AggregationService {
   }
 
   @Override
-  public AssetDistributionResponse getAssetDistribution() {
-    long totalBankAssetAmount = sumBankBalance();
-    long totalStockAssetAmount = fetchStockEvaluationAmount();
+  public AssetDistributionResponse getAssetDistribution(String firebaseUid) {
+    long totalBankAssetAmount = sumBankBalance(firebaseUid);
+    long totalStockAssetAmount = fetchStockEvaluationAmount(firebaseUid);
     long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
     return AssetDistributionResponse.builder()
@@ -51,20 +51,20 @@ public class AggregationServiceImpl implements AggregationService {
   }
 
   @Override
-  public DashboardResponse getDashboard() {
+  public DashboardResponse getDashboard(String firebaseUid) {
     // 은행 계좌 조회 (잔액 합산 + 계좌 수 동시 처리)
-    List<AccountSummaryResponse> bankAccounts = bankMyDataService.getAccounts();
+    List<AccountSummaryResponse> bankAccounts = bankMyDataService.getAccounts(firebaseUid);
     long totalBankAssetAmount =
         bankAccounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
     int bankAccountCount = bankAccounts.size();
 
     // 증권 자산 조회 (미보유 시 0으로 기본값 처리)
-    var stockSummary = fetchStockSummaryOrDefault();
+    var stockSummary = fetchStockSummaryOrDefault(firebaseUid);
     long totalStockAssetAmount = stockSummary.totalEvaluationAmount();
     Double totalProfitRate = stockSummary.totalProfitRate();
 
     // 보유 종목 수 집계 (BaaS holdingCount 스펙 미지원으로 인한 N+1 임시 구현)
-    int holdingCount = countHoldings();
+    int holdingCount = countHoldings(firebaseUid);
 
     long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
@@ -82,21 +82,21 @@ public class AggregationServiceImpl implements AggregationService {
   // --- private helpers ---
 
   /** 은행 전체 계좌 잔액 합산 */
-  private long sumBankBalance() {
-    return bankMyDataService.getAccounts().stream()
+  private long sumBankBalance(String firebaseUid) {
+    return bankMyDataService.getAccounts(firebaseUid).stream()
         .mapToLong(AccountSummaryResponse::balance)
         .sum();
   }
 
   /** 증권 평가 금액 조회 (미보유 시 0 반환) */
-  private long fetchStockEvaluationAmount() {
-    return fetchStockSummaryOrDefault().totalEvaluationAmount();
+  private long fetchStockEvaluationAmount(String firebaseUid) {
+    return fetchStockSummaryOrDefault(firebaseUid).totalEvaluationAmount();
   }
 
   /** 증권 자산 요약 조회. 증권 계좌/자산이 없는 경우 0으로 채운 기본값을 반환하여 집계 API가 실패하지 않도록 처리. */
-  private AssetSummaryResponse fetchStockSummaryOrDefault() {
+  private AssetSummaryResponse fetchStockSummaryOrDefault(String firebaseUid) {
     try {
-      return stockMyDataService.getAssetSummary();
+      return stockMyDataService.getAssetSummary(firebaseUid);
     } catch (StockMyDataException e) {
       if (ErrorCode.STOCK_ASSET_SUMMARY_NOT_FOUND.equals(e.getErrorCode())) {
         return AssetSummaryResponse.builder()
@@ -112,9 +112,9 @@ public class AggregationServiceImpl implements AggregationService {
   }
 
   /** 전체 증권 계좌의 보유 종목 수 합산. 계좌/종목이 없는 경우 0 반환. */
-  private int countHoldings() {
+  private int countHoldings(String firebaseUid) {
     try {
-      List<StockAccountSummaryResponse> stockAccounts = stockMyDataService.getAccounts();
+      List<StockAccountSummaryResponse> stockAccounts = stockMyDataService.getAccounts(firebaseUid);
       int count = 0;
       for (StockAccountSummaryResponse account : stockAccounts) {
         count += stockMyDataService.getHoldings(account.accountId()).size();

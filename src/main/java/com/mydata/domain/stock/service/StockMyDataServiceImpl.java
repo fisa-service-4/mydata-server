@@ -21,9 +21,10 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   private final StockMyDataMapper stockMyDataMapper;
 
   @Override
-  public List<StockAccountSummaryResponse> getAccounts() {
+  public List<StockAccountSummaryResponse> getAccounts(String firebaseUid) {
     try {
-      ApiResponse<List<StockAccountResponse>> response = stockInternalClient.getAccounts();
+      ApiResponse<List<StockAccountResponse>> response =
+          stockInternalClient.getAccounts(firebaseUid);
 
       if (response == null || response.data() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_ACCOUNT_NOT_FOUND);
@@ -93,9 +94,10 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   }
 
   @Override
-  public AssetSummaryResponse getAssetSummary() {
+  public AssetSummaryResponse getAssetSummary(String firebaseUid) {
     try {
-      ApiResponse<StockAssetSummaryResponse> response = stockInternalClient.getAssetSummary();
+      ApiResponse<StockAssetSummaryResponse> response =
+          stockInternalClient.getAssetSummary(firebaseUid);
 
       if (response == null || response.data() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_ASSET_SUMMARY_NOT_FOUND);

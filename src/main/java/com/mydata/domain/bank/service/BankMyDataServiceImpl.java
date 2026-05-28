@@ -21,9 +21,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
   private final BankMyDataMapper bankMyDataMapper;
 
   @Override
-  public List<AccountSummaryResponse> getAccounts() {
+  public List<AccountSummaryResponse> getAccounts(String firebaseUid) {
     try {
-      ApiResponse<List<BankAccountResponse>> response = bankInternalClient.getAccounts();
+      ApiResponse<List<BankAccountResponse>> response = bankInternalClient.getAccounts(firebaseUid);
 
       if (response == null || response.data() == null) {
         throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);

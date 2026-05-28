@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface BankMyDataService {
 
-  List<AccountSummaryResponse> getAccounts();
+  List<AccountSummaryResponse> getAccounts(String firebaseUid);
 
   AccountDetailResponse getAccountDetail(Long accountId);
 

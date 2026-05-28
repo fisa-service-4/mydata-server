@@ -5,6 +5,7 @@ import com.mydata.domain.mydata.dto.response.ConnectResponse;
 import com.mydata.domain.mydata.dto.response.ConnectionResponse;
 import com.mydata.domain.mydata.dto.response.SyncResponse;
 import com.mydata.domain.mydata.service.MyDataService;
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,9 +71,11 @@ public class MyDataController {
                             """)))
   })
   @PostMapping("/connect")
-  public ApiResponse<ConnectResponse> connect(@Valid @RequestBody ConnectRequest request) {
+  public ApiResponse<ConnectResponse> connect(
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid,
+      @Valid @RequestBody ConnectRequest request) {
 
-    return ApiResponse.success(myDataService.connect(request));
+    return ApiResponse.success(myDataService.connect(request, firebaseUid));
   }
 
   @Operation(summary = "연동 목록 조회", description = "현재 연동된 금융 계좌 목록을 조회합니다.")
@@ -121,9 +125,10 @@ public class MyDataController {
                             """)))
   })
   @GetMapping("/connections")
-  public ApiResponse<ConnectionResponse> getConnections() {
+  public ApiResponse<ConnectionResponse> getConnections(
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(myDataService.getConnections());
+    return ApiResponse.success(myDataService.getConnections(firebaseUid));
   }
 
   @Operation(summary = "마이데이터 동기화", description = "은행/증권 마이데이터를 최신 상태로 동기화합니다.")
@@ -165,8 +170,9 @@ public class MyDataController {
                             """)))
   })
   @PostMapping("/sync")
-  public ApiResponse<SyncResponse> sync() {
+  public ApiResponse<SyncResponse> sync(
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(myDataService.sync());
+    return ApiResponse.success(myDataService.sync(firebaseUid));
   }
 }

@@ -2,11 +2,13 @@ package com.mydata.domain.bank.client.internal;
 
 import com.mydata.domain.bank.client.dto.response.*;
 import com.mydata.global.config.FeignConfig;
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
@@ -16,7 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface BankInternalClient {
 
   @GetMapping("/baas/v1/bank/accounts")
-  ApiResponse<List<BankAccountResponse>> getAccounts();
+  ApiResponse<List<BankAccountResponse>> getAccounts(
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}")
   ApiResponse<BankAccountDetailResponse> getAccountDetail(@PathVariable Long accountId);

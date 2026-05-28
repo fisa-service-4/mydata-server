@@ -2,6 +2,7 @@ package com.mydata.domain.stock.controller;
 
 import com.mydata.domain.stock.dto.response.*;
 import com.mydata.domain.stock.service.StockMyDataService;
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -66,9 +67,10 @@ public class StockMyDataController {
                             """)))
   })
   @GetMapping("/accounts")
-  public ApiResponse<List<StockAccountSummaryResponse>> getAccounts() {
+  public ApiResponse<List<StockAccountSummaryResponse>> getAccounts(
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(stockMyDataService.getAccounts());
+    return ApiResponse.success(stockMyDataService.getAccounts(firebaseUid));
   }
 
   @Operation(summary = "보유 종목 조회")
@@ -256,8 +258,9 @@ public class StockMyDataController {
                             """)))
   })
   @GetMapping("/assets/summary")
-  public ApiResponse<AssetSummaryResponse> getAssetSummary() {
+  public ApiResponse<AssetSummaryResponse> getAssetSummary(
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(stockMyDataService.getAssetSummary());
+    return ApiResponse.success(stockMyDataService.getAssetSummary(firebaseUid));
   }
 }

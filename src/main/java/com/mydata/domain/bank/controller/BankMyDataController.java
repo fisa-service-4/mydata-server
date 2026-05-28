@@ -3,6 +3,7 @@ package com.mydata.domain.bank.controller;
 import com.mydata.domain.bank.dto.request.TransactionSearchRequest;
 import com.mydata.domain.bank.dto.response.*;
 import com.mydata.domain.bank.service.BankMyDataService;
+import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -70,9 +71,10 @@ public class BankMyDataController {
                             """)))
   })
   @GetMapping
-  public ApiResponse<List<AccountSummaryResponse>> getAccounts() {
+  public ApiResponse<List<AccountSummaryResponse>> getAccounts(
+      @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid) {
 
-    return ApiResponse.success(bankMyDataService.getAccounts());
+    return ApiResponse.success(bankMyDataService.getAccounts(firebaseUid));
   }
 
   @Operation(summary = "계좌 상세 조회")

@@ -27,20 +27,20 @@ public class MyDataServiceImpl implements MyDataService {
   private final AggregationService aggregationService;
 
   @Override
-  public ConnectResponse connect(ConnectRequest request) {
+  public ConnectResponse connect(ConnectRequest request, String firebaseUid) {
 
     boolean bankLinked = false;
     boolean stockLinked = false;
 
     try {
-      bankMyDataService.getAccounts();
+      bankMyDataService.getAccounts(firebaseUid);
       bankLinked = true;
     } catch (BusinessException e) {
       log.debug("은행 계좌 연동 확인 실패: {}", e.getMessage());
     }
 
     try {
-      stockMyDataService.getAccounts();
+      stockMyDataService.getAccounts(firebaseUid);
       stockLinked = true;
     } catch (BusinessException e) {
       log.debug("증권 계좌 연동 확인 실패: {}", e.getMessage());
@@ -54,20 +54,20 @@ public class MyDataServiceImpl implements MyDataService {
   }
 
   @Override
-  public ConnectionResponse getConnections() {
+  public ConnectionResponse getConnections(String firebaseUid) {
 
     List<AccountSummaryResponse> bankAccounts;
     List<StockAccountSummaryResponse> stockAccounts;
 
     try {
-      bankAccounts = bankMyDataService.getAccounts();
+      bankAccounts = bankMyDataService.getAccounts(firebaseUid);
     } catch (BusinessException e) {
       log.warn("은행 계좌 목록 조회 실패: {}", e.getMessage());
       bankAccounts = Collections.emptyList();
     }
 
     try {
-      stockAccounts = stockMyDataService.getAccounts();
+      stockAccounts = stockMyDataService.getAccounts(firebaseUid);
     } catch (BusinessException e) {
       log.warn("증권 계좌 목록 조회 실패: {}", e.getMessage());
       stockAccounts = Collections.emptyList();
@@ -80,22 +80,22 @@ public class MyDataServiceImpl implements MyDataService {
   }
 
   @Override
-  public SyncResponse sync() {
+  public SyncResponse sync(String firebaseUid) {
 
     try {
-      bankMyDataService.getAccounts();
+      bankMyDataService.getAccounts(firebaseUid);
     } catch (BusinessException e) {
       log.warn("동기화 중 은행 계좌 조회 실패: {}", e.getMessage());
     }
 
     try {
-      stockMyDataService.getAccounts();
+      stockMyDataService.getAccounts(firebaseUid);
     } catch (BusinessException e) {
       log.warn("동기화 중 증권 계좌 조회 실패: {}", e.getMessage());
     }
 
     try {
-      aggregationService.getAssetSummary();
+      aggregationService.getAssetSummary(firebaseUid);
     } catch (BusinessException e) {
       log.warn("동기화 중 자산 요약 조회 실패: {}", e.getMessage());
     }

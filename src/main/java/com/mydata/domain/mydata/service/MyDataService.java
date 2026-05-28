@@ -7,9 +7,9 @@ import com.mydata.domain.mydata.dto.response.SyncResponse;
 
 public interface MyDataService {
 
-  ConnectResponse connect(ConnectRequest request);
+  ConnectResponse connect(ConnectRequest request, String firebaseUid);
 
-  ConnectionResponse getConnections();
+  ConnectionResponse getConnections(String firebaseUid);
 
-  SyncResponse sync();
+  SyncResponse sync(String firebaseUid);
 }
