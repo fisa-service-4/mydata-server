@@ -6,9 +6,9 @@ import com.mydata.domain.aggregation.dto.response.TotalAssetSummaryResponse;
 
 public interface AggregationService {
 
-  TotalAssetSummaryResponse getAssetSummary(Long userId);
+  TotalAssetSummaryResponse getAssetSummary();
 
-  AssetDistributionResponse getAssetDistribution(Long userId);
+  AssetDistributionResponse getAssetDistribution();
 
-  DashboardResponse getDashboard(Long userId);
+  DashboardResponse getDashboard();
 }

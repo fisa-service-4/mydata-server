@@ -4,18 +4,15 @@ import com.mydata.domain.aggregation.dto.response.AssetDistributionResponse;
 import com.mydata.domain.aggregation.dto.response.DashboardResponse;
 import com.mydata.domain.aggregation.dto.response.TotalAssetSummaryResponse;
 import com.mydata.domain.aggregation.service.AggregationService;
-import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -85,10 +82,9 @@ public class AggregationController {
                             """)))
   })
   @GetMapping("/summary")
-  public ApiResponse<TotalAssetSummaryResponse> getAssetSummary(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+  public ApiResponse<TotalAssetSummaryResponse> getAssetSummary() {
 
-    return ApiResponse.success(aggregationService.getAssetSummary(userId));
+    return ApiResponse.success(aggregationService.getAssetSummary());
   }
 
   @Operation(summary = "자산 분포 조회", description = "은행/증권 자산 비율 분포를 조회합니다.")
@@ -149,10 +145,9 @@ public class AggregationController {
                             """)))
   })
   @GetMapping("/distribution")
-  public ApiResponse<AssetDistributionResponse> getAssetDistribution(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+  public ApiResponse<AssetDistributionResponse> getAssetDistribution() {
 
-    return ApiResponse.success(aggregationService.getAssetDistribution(userId));
+    return ApiResponse.success(aggregationService.getAssetDistribution());
   }
 
   @Operation(
@@ -217,9 +212,8 @@ public class AggregationController {
                             """)))
   })
   @GetMapping("/dashboard")
-  public ApiResponse<DashboardResponse> getDashboard(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+  public ApiResponse<DashboardResponse> getDashboard() {
 
-    return ApiResponse.success(aggregationService.getDashboard(userId));
+    return ApiResponse.success(aggregationService.getDashboard());
   }
 }

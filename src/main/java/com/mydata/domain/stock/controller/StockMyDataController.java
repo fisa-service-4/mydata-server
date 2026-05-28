@@ -2,7 +2,6 @@ package com.mydata.domain.stock.controller;
 
 import com.mydata.domain.stock.dto.response.*;
 import com.mydata.domain.stock.service.StockMyDataService;
-import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -67,10 +66,9 @@ public class StockMyDataController {
                             """)))
   })
   @GetMapping("/accounts")
-  public ApiResponse<List<StockAccountSummaryResponse>> getAccounts(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+  public ApiResponse<List<StockAccountSummaryResponse>> getAccounts() {
 
-    return ApiResponse.success(stockMyDataService.getAccounts(userId));
+    return ApiResponse.success(stockMyDataService.getAccounts());
   }
 
   @Operation(summary = "보유 종목 조회")
@@ -119,11 +117,9 @@ public class StockMyDataController {
                             """)))
   })
   @GetMapping("/accounts/{accountId}/holdings")
-  public ApiResponse<List<HoldingResponse>> getHoldings(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
-      @PathVariable @Positive Long accountId) {
+  public ApiResponse<List<HoldingResponse>> getHoldings(@PathVariable @Positive Long accountId) {
 
-    return ApiResponse.success(stockMyDataService.getHoldings(userId, accountId));
+    return ApiResponse.success(stockMyDataService.getHoldings(accountId));
   }
 
   @Operation(summary = "포트폴리오 조회")
@@ -167,11 +163,9 @@ public class StockMyDataController {
                             """)))
   })
   @GetMapping("/accounts/{accountId}/portfolio")
-  public ApiResponse<PortfolioResponse> getPortfolio(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
-      @PathVariable @Positive Long accountId) {
+  public ApiResponse<PortfolioResponse> getPortfolio(@PathVariable @Positive Long accountId) {
 
-    return ApiResponse.success(stockMyDataService.getPortfolio(userId, accountId));
+    return ApiResponse.success(stockMyDataService.getPortfolio(accountId));
   }
 
   @Operation(summary = "수익률 조회")
@@ -215,11 +209,9 @@ public class StockMyDataController {
                             """)))
   })
   @GetMapping("/accounts/{accountId}/returns")
-  public ApiResponse<ReturnResponse> getReturns(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId,
-      @PathVariable @Positive Long accountId) {
+  public ApiResponse<ReturnResponse> getReturns(@PathVariable @Positive Long accountId) {
 
-    return ApiResponse.success(stockMyDataService.getReturns(userId, accountId));
+    return ApiResponse.success(stockMyDataService.getReturns(accountId));
   }
 
   @Operation(summary = "전체 자산 요약 조회")
@@ -264,9 +256,8 @@ public class StockMyDataController {
                             """)))
   })
   @GetMapping("/assets/summary")
-  public ApiResponse<AssetSummaryResponse> getAssetSummary(
-      @RequestHeader(TraceIdConstants.USER_ID_HEADER) @Positive Long userId) {
+  public ApiResponse<AssetSummaryResponse> getAssetSummary() {
 
-    return ApiResponse.success(stockMyDataService.getAssetSummary(userId));
+    return ApiResponse.success(stockMyDataService.getAssetSummary());
   }
 }

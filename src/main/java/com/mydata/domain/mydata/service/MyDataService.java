@@ -7,9 +7,9 @@ import com.mydata.domain.mydata.dto.response.SyncResponse;
 
 public interface MyDataService {
 
-  ConnectResponse connect(Long userId, ConnectRequest request);
+  ConnectResponse connect(ConnectRequest request);
 
-  ConnectionResponse getConnections(Long userId);
+  ConnectionResponse getConnections();
 
-  SyncResponse sync(Long userId);
+  SyncResponse sync();
 }

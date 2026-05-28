@@ -22,9 +22,9 @@ public class AggregationServiceImpl implements AggregationService {
   private final StockMyDataService stockMyDataService;
 
   @Override
-  public TotalAssetSummaryResponse getAssetSummary(Long userId) {
-    long totalBankAssetAmount = sumBankBalance(userId);
-    long totalStockAssetAmount = fetchStockEvaluationAmount(userId);
+  public TotalAssetSummaryResponse getAssetSummary() {
+    long totalBankAssetAmount = sumBankBalance();
+    long totalStockAssetAmount = fetchStockEvaluationAmount();
     long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
     return TotalAssetSummaryResponse.builder()
@@ -36,9 +36,9 @@ public class AggregationServiceImpl implements AggregationService {
   }
 
   @Override
-  public AssetDistributionResponse getAssetDistribution(Long userId) {
-    long totalBankAssetAmount = sumBankBalance(userId);
-    long totalStockAssetAmount = fetchStockEvaluationAmount(userId);
+  public AssetDistributionResponse getAssetDistribution() {
+    long totalBankAssetAmount = sumBankBalance();
+    long totalStockAssetAmount = fetchStockEvaluationAmount();
     long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
     return AssetDistributionResponse.builder()
@@ -51,20 +51,20 @@ public class AggregationServiceImpl implements AggregationService {
   }
 
   @Override
-  public DashboardResponse getDashboard(Long userId) {
+  public DashboardResponse getDashboard() {
     // 은행 계좌 조회 (잔액 합산 + 계좌 수 동시 처리)
-    List<AccountSummaryResponse> bankAccounts = bankMyDataService.getAccounts(userId);
+    List<AccountSummaryResponse> bankAccounts = bankMyDataService.getAccounts();
     long totalBankAssetAmount =
         bankAccounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
     int bankAccountCount = bankAccounts.size();
 
     // 증권 자산 조회 (미보유 시 0으로 기본값 처리)
-    var stockSummary = fetchStockSummaryOrDefault(userId);
+    var stockSummary = fetchStockSummaryOrDefault();
     long totalStockAssetAmount = stockSummary.totalEvaluationAmount();
     Double totalProfitRate = stockSummary.totalProfitRate();
 
     // 보유 종목 수 집계 (BaaS holdingCount 스펙 미지원으로 인한 N+1 임시 구현)
-    int holdingCount = countHoldings(userId);
+    int holdingCount = countHoldings();
 
     long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
 
@@ -82,21 +82,21 @@ public class AggregationServiceImpl implements AggregationService {
   // --- private helpers ---
 
   /** 은행 전체 계좌 잔액 합산 */
-  private long sumBankBalance(Long userId) {
-    return bankMyDataService.getAccounts(userId).stream()
+  private long sumBankBalance() {
+    return bankMyDataService.getAccounts().stream()
         .mapToLong(AccountSummaryResponse::balance)
         .sum();
   }
 
   /** 증권 평가 금액 조회 (미보유 시 0 반환) */
-  private long fetchStockEvaluationAmount(Long userId) {
-    return fetchStockSummaryOrDefault(userId).totalEvaluationAmount();
+  private long fetchStockEvaluationAmount() {
+    return fetchStockSummaryOrDefault().totalEvaluationAmount();
   }
 
   /** 증권 자산 요약 조회. 증권 계좌/자산이 없는 경우 0으로 채운 기본값을 반환하여 집계 API가 실패하지 않도록 처리. */
-  private AssetSummaryResponse fetchStockSummaryOrDefault(Long userId) {
+  private AssetSummaryResponse fetchStockSummaryOrDefault() {
     try {
-      return stockMyDataService.getAssetSummary(userId);
+      return stockMyDataService.getAssetSummary();
     } catch (StockMyDataException e) {
       if (ErrorCode.STOCK_ASSET_SUMMARY_NOT_FOUND.equals(e.getErrorCode())) {
         return AssetSummaryResponse.builder()
@@ -112,12 +112,12 @@ public class AggregationServiceImpl implements AggregationService {
   }
 
   /** 전체 증권 계좌의 보유 종목 수 합산. 계좌/종목이 없는 경우 0 반환. */
-  private int countHoldings(Long userId) {
+  private int countHoldings() {
     try {
-      List<StockAccountSummaryResponse> stockAccounts = stockMyDataService.getAccounts(userId);
+      List<StockAccountSummaryResponse> stockAccounts = stockMyDataService.getAccounts();
       int count = 0;
       for (StockAccountSummaryResponse account : stockAccounts) {
-        count += stockMyDataService.getHoldings(userId, account.accountId()).size();
+        count += stockMyDataService.getHoldings(account.accountId()).size();
       }
       return count;
     } catch (StockMyDataException e) {
