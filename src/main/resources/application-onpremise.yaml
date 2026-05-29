@@ -1,0 +1,17 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: mydata-server
+
+external:
+  baas:
+    url: http://transaction-server:8083
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] [%thread] %-5level %logger - %msg%n"
+  level:
+    com.mydata.domain.bank.client.internal: DEBUG
+    com.mydata.domain.stock.client.internal: DEBUG
