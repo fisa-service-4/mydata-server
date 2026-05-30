@@ -4,4 +4,4 @@ import lombok.Builder;
 
 @Builder
 public record StockAccountSummaryResponse(
-    Long accountId, String accountNumber, String accountName, Long availableCash) {}
+    Long accountId, String accountNumber, String accountName, String bankCode) {}
