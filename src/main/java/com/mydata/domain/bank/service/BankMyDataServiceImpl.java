@@ -25,6 +25,7 @@ public class BankMyDataServiceImpl implements BankMyDataService {
     try {
       ApiResponse<com.mydata.domain.bank.client.dto.response.BankAccountListResponse> response =
           bankInternalClient.getAccounts(firebaseUid);
+      ApiResponse<BankAccountListResponse> response = bankInternalClient.getAccounts(firebaseUid);
 
       if (response == null || response.data() == null || response.data().getContent() == null) {
         throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
