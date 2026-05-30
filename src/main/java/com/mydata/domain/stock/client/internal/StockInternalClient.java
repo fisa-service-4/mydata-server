@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface StockInternalClient {
 
   @GetMapping("/baas/v1/stock/accounts")
-  ApiResponse<List<StockAccountResponse>> getAccounts(
+  ApiResponse<StockAccountListResponse> getAccounts(
       @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid);
 
   @GetMapping("/baas/v1/stock/accounts/{accountId}/holdings")

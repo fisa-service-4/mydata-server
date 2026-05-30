@@ -13,5 +13,5 @@ public class StockAccountResponse {
 
   private String accountName;
 
-  private Long availableCash;
+  private String bankCode;
 }

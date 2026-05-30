@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface BankInternalClient {
 
   @GetMapping("/baas/v1/bank/accounts")
-  ApiResponse<List<BankAccountResponse>> getAccounts(
+  ApiResponse<BankAccountListResponse> getAccounts(
       @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}")

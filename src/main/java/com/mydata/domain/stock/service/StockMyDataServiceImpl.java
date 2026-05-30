@@ -23,14 +23,13 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   @Override
   public List<StockAccountSummaryResponse> getAccounts(String firebaseUid) {
     try {
-      ApiResponse<List<StockAccountResponse>> response =
-          stockInternalClient.getAccounts(firebaseUid);
+      ApiResponse<StockAccountListResponse> response = stockInternalClient.getAccounts(firebaseUid);
 
-      if (response == null || response.data() == null) {
+      if (response == null || response.data() == null || response.data().getContent() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_ACCOUNT_NOT_FOUND);
       }
 
-      return stockMyDataMapper.toStockAccountSummaryList(response.data());
+      return stockMyDataMapper.toStockAccountSummaryList(response.data().getContent());
 
     } catch (FeignException.NotFound e) {
       throw new StockMyDataException(ErrorCode.STOCK_ACCOUNT_NOT_FOUND, e);
