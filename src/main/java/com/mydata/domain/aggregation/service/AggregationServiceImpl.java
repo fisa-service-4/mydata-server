@@ -4,12 +4,14 @@ import com.mydata.domain.aggregation.dto.response.AssetDistributionResponse;
 import com.mydata.domain.aggregation.dto.response.DashboardResponse;
 import com.mydata.domain.aggregation.dto.response.TotalAssetSummaryResponse;
 import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
+import com.mydata.domain.bank.exception.BankMyDataException;
 import com.mydata.domain.bank.service.BankMyDataService;
 import com.mydata.domain.stock.dto.response.AssetSummaryResponse;
 import com.mydata.domain.stock.dto.response.StockAccountSummaryResponse;
 import com.mydata.domain.stock.exception.StockMyDataException;
 import com.mydata.domain.stock.service.StockMyDataService;
 import com.mydata.global.exception.ErrorCode;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,7 +55,7 @@ public class AggregationServiceImpl implements AggregationService {
   @Override
   public DashboardResponse getDashboard(String firebaseUid) {
     // 은행 계좌 조회 (잔액 합산 + 계좌 수 동시 처리)
-    List<AccountSummaryResponse> bankAccounts = bankMyDataService.getAccounts(firebaseUid);
+    List<AccountSummaryResponse> bankAccounts = fetchBankAccountsOrEmpty(firebaseUid);
     long totalBankAssetAmount =
         bankAccounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
     int bankAccountCount = bankAccounts.size();
@@ -81,9 +83,21 @@ public class AggregationServiceImpl implements AggregationService {
 
   // --- private helpers ---
 
+  /** 은행 계좌 목록 조회. 계좌가 없거나 조회 실패 시 빈 리스트 반환. */
+  private List<AccountSummaryResponse> fetchBankAccountsOrEmpty(String firebaseUid) {
+    try {
+      return bankMyDataService.getAccounts(firebaseUid);
+    } catch (BankMyDataException e) {
+      if (ErrorCode.ACCOUNT_001.equals(e.getErrorCode())) {
+        return Collections.emptyList();
+      }
+      throw e;
+    }
+  }
+
   /** 은행 전체 계좌 잔액 합산 */
   private long sumBankBalance(String firebaseUid) {
-    return bankMyDataService.getAccounts(firebaseUid).stream()
+    return fetchBankAccountsOrEmpty(firebaseUid).stream()
         .mapToLong(AccountSummaryResponse::balance)
         .sum();
   }

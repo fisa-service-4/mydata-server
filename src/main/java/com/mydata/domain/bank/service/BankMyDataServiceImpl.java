@@ -9,6 +9,7 @@ import com.mydata.domain.bank.mapper.BankMyDataMapper;
 import com.mydata.global.exception.ErrorCode;
 import com.mydata.global.response.ApiResponse;
 import feign.FeignException;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,12 @@ public class BankMyDataServiceImpl implements BankMyDataService {
     try {
       ApiResponse<BankAccountListResponse> response = bankInternalClient.getAccounts(firebaseUid);
 
-      if (response == null || response.data() == null || response.data().getContent() == null) {
+      if (response == null || response.data() == null) {
         throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
+      }
+
+      if (response.data().getContent() == null) {
+        return Collections.emptyList();
       }
 
       return bankMyDataMapper.toAccountSummaryList(response.data().getContent());
