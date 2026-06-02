@@ -7,6 +7,7 @@ import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
 import com.mydata.domain.bank.exception.BankMyDataException;
 import com.mydata.domain.bank.service.BankMyDataService;
 import com.mydata.domain.stock.dto.response.AssetSummaryResponse;
+import com.mydata.domain.stock.dto.response.HoldingResponse;
 import com.mydata.domain.stock.dto.response.StockAccountSummaryResponse;
 import com.mydata.domain.stock.exception.StockMyDataException;
 import com.mydata.domain.stock.service.StockMyDataService;
@@ -60,24 +61,19 @@ public class AggregationServiceImpl implements AggregationService {
         bankAccounts.stream().mapToLong(AccountSummaryResponse::balance).sum();
     int bankAccountCount = bankAccounts.size();
 
-    // 증권 자산 조회 (미보유 시 0으로 기본값 처리)
-    var stockSummary = fetchStockSummaryOrDefault(firebaseUid);
-    long totalStockAssetAmount = stockSummary.totalEvaluationAmount();
-    Double totalProfitRate = stockSummary.totalProfitRate();
+    // 증권 보유 종목에서 직접 자산 계산
+    StockAssets stockAssets = calcStockAssetsFromHoldings(firebaseUid);
 
-    // 보유 종목 수 집계 (BaaS holdingCount 스펙 미지원으로 인한 N+1 임시 구현)
-    int holdingCount = countHoldings(firebaseUid);
-
-    long totalAssetAmount = totalBankAssetAmount + totalStockAssetAmount;
+    long totalAssetAmount = totalBankAssetAmount + stockAssets.evaluationAmount();
 
     return DashboardResponse.builder()
         .totalAssetAmount(totalAssetAmount)
         .totalBankAssetAmount(totalBankAssetAmount)
-        .totalStockAssetAmount(totalStockAssetAmount)
-        .investmentRatio(computeRatio(totalStockAssetAmount, totalAssetAmount))
+        .totalStockAssetAmount(stockAssets.evaluationAmount())
+        .investmentRatio(computeRatio(stockAssets.evaluationAmount(), totalAssetAmount))
         .bankAccountCount(bankAccountCount)
-        .holdingCount(holdingCount)
-        .totalProfitRate(totalProfitRate)
+        .holdingCount(stockAssets.holdingCount())
+        .totalProfitRate(stockAssets.profitRate())
         .build();
   }
 
@@ -125,19 +121,37 @@ public class AggregationServiceImpl implements AggregationService {
     }
   }
 
-  /** 전체 증권 계좌의 보유 종목 수 합산. 계좌/종목이 없는 경우 0 반환. */
-  private int countHoldings(String firebaseUid) {
+  private record StockAssets(long evaluationAmount, int holdingCount, Double profitRate) {}
+
+  /** 보유 종목에서 직접 증권 평가금액, 보유 종목 수, 수익률을 계산. */
+  private StockAssets calcStockAssetsFromHoldings(String firebaseUid) {
     try {
       List<StockAccountSummaryResponse> stockAccounts = stockMyDataService.getAccounts(firebaseUid);
+      long totalEvaluation = 0;
+      long totalPurchase = 0;
       int count = 0;
       for (StockAccountSummaryResponse account : stockAccounts) {
-        count += stockMyDataService.getHoldings(account.accountId()).size();
+        List<HoldingResponse> holdings = stockMyDataService.getHoldings(account.accountId());
+        for (HoldingResponse h : holdings) {
+          totalEvaluation += h.evaluationAmount() != null ? h.evaluationAmount().longValue() : 0L;
+          long purchase =
+              (h.averagePrice() != null && h.quantity() != null)
+                  ? h.averagePrice() * h.quantity()
+                  : 0L;
+          totalPurchase += purchase;
+          count++;
+        }
       }
-      return count;
+      Double profitRate =
+          totalPurchase > 0
+              ? Math.round(((double) (totalEvaluation - totalPurchase) / totalPurchase) * 100 * 100)
+                  / 100.0
+              : 0.0;
+      return new StockAssets(totalEvaluation, count, profitRate);
     } catch (StockMyDataException e) {
       if (ErrorCode.STOCK_ACCOUNT_NOT_FOUND.equals(e.getErrorCode())
           || ErrorCode.STOCK_HOLDING_NOT_FOUND.equals(e.getErrorCode())) {
-        return 0;
+        return new StockAssets(0L, 0, 0.0);
       }
       throw e;
     }

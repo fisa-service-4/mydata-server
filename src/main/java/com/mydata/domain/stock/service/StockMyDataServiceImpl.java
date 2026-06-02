@@ -41,13 +41,13 @@ public class StockMyDataServiceImpl implements StockMyDataService {
   @Override
   public List<HoldingResponse> getHoldings(Long accountId) {
     try {
-      ApiResponse<List<StockHoldingResponse>> response = stockInternalClient.getHoldings(accountId);
+      ApiResponse<StockHoldingListResponse> response = stockInternalClient.getHoldings(accountId);
 
-      if (response == null || response.data() == null) {
+      if (response == null || response.data() == null || response.data().getContent() == null) {
         throw new StockMyDataException(ErrorCode.STOCK_HOLDING_NOT_FOUND);
       }
 
-      return stockMyDataMapper.toHoldingResponseList(response.data());
+      return stockMyDataMapper.toHoldingResponseList(response.data().getContent());
 
     } catch (FeignException.NotFound e) {
       throw new StockMyDataException(ErrorCode.STOCK_HOLDING_NOT_FOUND, e);

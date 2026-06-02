@@ -8,6 +8,6 @@ public record HoldingResponse(
     String stockName,
     Long quantity,
     Long averagePrice,
-    Long currentPrice,
-    Long evaluationAmount,
+    Double currentPrice,
+    Double evaluationAmount,
     Double profitRate) {}

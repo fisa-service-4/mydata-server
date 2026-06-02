@@ -4,7 +4,6 @@ import com.mydata.domain.stock.client.dto.response.*;
 import com.mydata.global.config.FeignConfig;
 import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
-import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +20,7 @@ public interface StockInternalClient {
       @RequestHeader(TraceIdConstants.FIREBASE_UID_HEADER) String firebaseUid);
 
   @GetMapping("/baas/v1/stock/accounts/{accountId}/holdings")
-  ApiResponse<List<StockHoldingResponse>> getHoldings(@PathVariable Long accountId);
+  ApiResponse<StockHoldingListResponse> getHoldings(@PathVariable Long accountId);
 
   @GetMapping("/baas/v1/stock/accounts/{accountId}/portfolio")
   ApiResponse<StockPortfolioResponse> getPortfolio(@PathVariable Long accountId);

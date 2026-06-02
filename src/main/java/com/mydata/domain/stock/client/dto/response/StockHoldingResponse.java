@@ -15,9 +15,9 @@ public class StockHoldingResponse {
 
   private Long averagePrice;
 
-  private Long currentPrice;
+  private Double currentPrice;
 
-  private Long evaluationAmount;
+  private Double evaluationAmount;
 
   private Double profitRate;
 }
