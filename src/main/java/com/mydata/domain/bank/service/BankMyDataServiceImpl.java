@@ -23,8 +23,6 @@ public class BankMyDataServiceImpl implements BankMyDataService {
   @Override
   public List<AccountSummaryResponse> getAccounts(String firebaseUid) {
     try {
-      ApiResponse<com.mydata.domain.bank.client.dto.response.BankAccountListResponse> response =
-          bankInternalClient.getAccounts(firebaseUid);
       ApiResponse<BankAccountListResponse> response = bankInternalClient.getAccounts(firebaseUid);
 
       if (response == null || response.data() == null || response.data().getContent() == null) {
