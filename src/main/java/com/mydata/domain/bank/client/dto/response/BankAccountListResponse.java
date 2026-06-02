@@ -7,6 +7,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class BankAccountListResponse {
-
   private List<BankAccountResponse> content;
 }
