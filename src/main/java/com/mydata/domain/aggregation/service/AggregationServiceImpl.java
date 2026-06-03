@@ -133,6 +133,7 @@ public class AggregationServiceImpl implements AggregationService {
       for (StockAccountSummaryResponse account : stockAccounts) {
         List<HoldingResponse> holdings = stockMyDataService.getHoldings(account.accountId());
         for (HoldingResponse h : holdings) {
+          totalEvaluation += h.evaluationAmount() != null ? h.evaluationAmount().longValue() : 0L;
           totalEvaluation += h.evaluationAmount() != null ? h.evaluationAmount() : 0L;
           long purchase =
               (h.averagePrice() != null && h.quantity() != null)
