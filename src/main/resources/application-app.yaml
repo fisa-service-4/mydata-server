@@ -5,9 +5,10 @@ spring:
   application:
     name: mydata-server
 
+# on-prem transaction-server
 external:
   baas:
-    url: http://transaction-server:8083
+    url: http://10.10.4.107:8083
 
 logging:
   pattern:
