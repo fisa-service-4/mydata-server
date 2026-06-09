@@ -245,7 +245,51 @@
 
 ---
 
-## CARD-005. 카드 결제 처리
+## CARD-005. 계좌별 카드 목록 조회
+
+**GET** `/accounts/{accountId}/cards`
+
+> accountId로 연결된 카드 목록을 조회합니다.
+> X-User-Id 불필요 — 계좌 ID로 카드를 특정하므로 소유권 검증 없음.
+> mydata-server가 거래내역 조회 시 카드 승인내역 매핑을 위해 호출합니다.
+
+### Path Variable
+
+| 이름      | 타입 | 설명    |
+| --------- | ---- | ------- |
+| accountId | Long | 계좌 ID |
+
+### Response `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "cardId": 1,
+        "cardNumber": "1234-****-****-5678",
+        "linkedAccountId": 1001,
+        "cardStatus": "ACTIVE"
+      }
+    ]
+  },
+  "meta": {
+    "traceId": "uuid"
+  }
+}
+```
+
+| 필드            | 타입   | 설명                                         |
+| --------------- | ------ | -------------------------------------------- |
+| cardId          | Long   | 카드 ID                                      |
+| cardNumber      | String | 마스킹된 카드 번호 (뒤 4자리 노출)            |
+| linkedAccountId | Long   | 연결 계좌 ID                                 |
+| cardStatus      | String | ACTIVE / LOST / EXPIRED / SUSPENDED / CLOSED |
+
+---
+
+## CARD-006. 카드 결제 처리
 
 **POST** `/cards/{cardId}/payments`
 

@@ -23,6 +23,7 @@
 
 ```text
 /bank
+/card
 /stock
 /total
 ```
@@ -791,6 +792,88 @@
         "profitRate": 5.12
       }
     ]
+  },
+  "meta": {
+    "traceId": "uuid"
+  }
+}
+```
+
+---
+
+# CARD API
+
+---
+
+## CARD-001. 계좌별 카드 목록 조회
+
+**GET** `/card/accounts/{accountId}/cards`
+
+> accountId로 연결된 카드 목록을 조회한다. 사용자 식별 불필요.
+
+### Path Variable
+
+| 이름      | 타입 | 설명    |
+| --------- | ---- | ------- |
+| accountId | Long | 계좌 ID |
+
+### Response `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "cardId": 1,
+        "cardNumber": "1234-****-****-5678",
+        "linkedAccountId": 1001,
+        "cardStatus": "ACTIVE"
+      }
+    ]
+  },
+  "meta": {
+    "traceId": "uuid"
+  }
+}
+```
+
+---
+
+## CARD-002. 카드 승인 내역 조회
+
+**GET** `/card/cards/{cardId}/approvals`
+
+### Query Parameters
+
+| 이름     | 타입    | 필수 | 설명                                    |
+| -------- | ------- | ---- | --------------------------------------- |
+| fromDate | Date    | X    | 조회 시작일 (YYYY-MM-DD)                |
+| toDate   | Date    | X    | 조회 종료일 (YYYY-MM-DD)                |
+| page     | Integer | X    | 페이지 번호 (기본값: 0)                 |
+| size     | Integer | X    | 페이지 크기 (기본값: 20)                |
+
+### Response `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "approvalId": 50,
+        "accountTransactionId": 9001,
+        "merchantName": "스타벅스 강남점",
+        "merchantCategory": "CAFE",
+        "approvalAmount": 5500,
+        "approvalStatus": "APPROVED",
+        "approvedAt": "2026-05-17T12:00:00"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 42,
+    "totalPages": 3
   },
   "meta": {
     "traceId": "uuid"
