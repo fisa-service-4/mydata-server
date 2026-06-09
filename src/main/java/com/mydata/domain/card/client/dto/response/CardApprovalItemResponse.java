@@ -1,5 +1,6 @@
 package com.mydata.domain.card.client.dto.response;
 
+import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +16,7 @@ public class CardApprovalItemResponse {
 
   private String merchantCategory;
 
-  private Long approvalAmount;
+  private BigDecimal approvalAmount;
 
   private String approvalStatus;
 }
