@@ -248,7 +248,6 @@
       {
         "transactionId": 9001,
         "transactionType": "DEPOSIT",
-        "transactionCategory": "급여",
         "amount": 3000000,
         "balanceAfter": 3500000,
         "transactionChannel": "APP",
@@ -260,49 +259,6 @@
     "size": 20,
     "totalElements": 42,
     "totalPages": 3
-  },
-  "meta": {
-    "traceId": "uuid"
-  }
-}
-```
-
----
-
-## BANK-ACCOUNT-005. 거래 카테고리 조회
-
-**GET** `/accounts/{accountId}/transactions/categories`
-
-### Query Parameters
-
-| 이름     | 타입 | 필수 | 설명                     |
-| -------- | ---- | ---- | ------------------------ |
-| fromDate | Date | O    | 집계 시작일 (YYYY-MM-DD) |
-| toDate   | Date | O    | 집계 종료일 (YYYY-MM-DD) |
-
-### Response `200 OK`
-
-```json id="xq9yqv"
-{
-  "success": true,
-  "data": {
-    "categories": [
-      {
-        "category": "급여",
-        "totalAmount": 3000000,
-        "count": 1
-      },
-      {
-        "category": "식비",
-        "totalAmount": 280000,
-        "count": 12
-      },
-      {
-        "category": "교통",
-        "totalAmount": 95000,
-        "count": 8
-      }
-    ]
   },
   "meta": {
     "traceId": "uuid"

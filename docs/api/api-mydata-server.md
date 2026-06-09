@@ -307,44 +307,6 @@
 
 ---
 
-## MYDATA-BANK-ACCOUNT-005. 거래 카테고리 조회
-
-**GET** `/bank/accounts/{accountId}/transactions/categories`
-
-### Response `200 OK`
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "category": "급여",
-      "amount": 3000000
-    },
-    {
-      "category": "식비",
-      "amount": 280000
-    }
-  ],
-  "meta": {
-    "traceId": "uuid"
-  }
-}
-```
-
-| 필드     | 타입   | 설명          |
-| -------- | ------ | ------------- |
-| category | String | 거래 카테고리  |
-| amount   | Long   | 카테고리별 금액 |
-
-### Error Codes
-
-| 상황      | 코드        | 메시지    |
-| --------- | ----------- | --------- |
-| 계좌 없음 | ACCOUNT_001 | 계좌 없음 |
-
----
-
 # STOCK API
 
 ---
