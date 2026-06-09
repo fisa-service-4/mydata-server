@@ -28,8 +28,10 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -40,6 +42,9 @@ public class BankMyDataServiceImpl implements BankMyDataService {
   private final BankInternalClient bankInternalClient;
   private final CardInternalClient cardInternalClient;
   private final BankMyDataMapper bankMyDataMapper;
+
+  @Qualifier("myDataQueryExecutor")
+  private final Executor myDataQueryExecutor;
 
   @Override
   public List<AccountSummaryResponse> getAccounts(String firebaseUid) {
@@ -105,11 +110,13 @@ public class BankMyDataServiceImpl implements BankMyDataService {
       Long accountId, TransactionSearchRequest request) {
 
     CompletableFuture<List<BankTransactionResponse>> bankFuture =
-        CompletableFuture.supplyAsync(() -> fetchBankTransactions(accountId, request));
+        CompletableFuture.supplyAsync(
+            () -> fetchBankTransactions(accountId, request), myDataQueryExecutor);
 
     CompletableFuture<CardApprovalData> cardFuture =
         CompletableFuture.supplyAsync(
-            () -> buildCardApprovalMap(accountId, request.fromDate(), request.toDate()));
+            () -> buildCardApprovalMap(accountId, request.fromDate(), request.toDate()),
+            myDataQueryExecutor);
 
     try {
       List<BankTransactionResponse> bankTxs = bankFuture.get();
@@ -153,7 +160,8 @@ public class BankMyDataServiceImpl implements BankMyDataService {
       if (approval.getMerchantCategory() == null) {
         continue;
       }
-      Long amount = approval.getApprovalAmount() != null ? approval.getApprovalAmount() : 0L;
+      Long amount =
+          approval.getApprovalAmount() != null ? approval.getApprovalAmount().longValue() : 0L;
       categoryTotals.merge(approval.getMerchantCategory(), amount, Long::sum);
     }
 
@@ -233,7 +241,8 @@ public class BankMyDataServiceImpl implements BankMyDataService {
                             log.warn(
                                 "카드 승인내역 조회 실패 cardId={}: {}", card.getCardId(), e.getMessage());
                           }
-                        }))
+                        },
+                        myDataQueryExecutor))
             .toList();
 
     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
