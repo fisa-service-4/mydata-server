@@ -4,4 +4,4 @@ spring:
 
 external:
   baas:
-    url: http://localhost:8083
+    url: http://${TRANSACTION_SERVER_HOST:localhost}:8083

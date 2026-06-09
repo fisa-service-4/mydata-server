@@ -77,7 +77,7 @@ public class BankMyDataController {
     return ApiResponse.success(bankMyDataService.getAccounts(firebaseUid));
   }
 
-  @Operation(summary = "계좌 상세 조회")
+  @Operation(summary = "계좌 상세 조회", description = "계좌 ID로 계좌 상세 정보를 조회합니다.")
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -126,7 +126,7 @@ public class BankMyDataController {
     return ApiResponse.success(bankMyDataService.getAccountDetail(accountId));
   }
 
-  @Operation(summary = "잔액 조회")
+  @Operation(summary = "잔액 조회", description = "계좌 ID로 현재 잔액 및 출금 가능 잔액을 조회합니다.")
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -171,7 +171,14 @@ public class BankMyDataController {
     return ApiResponse.success(bankMyDataService.getBalance(accountId));
   }
 
-  @Operation(summary = "거래내역 조회", description = "계좌 거래내역을 조회합니다.")
+  @Operation(
+      summary = "거래내역 조회",
+      description =
+          """
+          계좌 거래내역을 조회합니다.
+          카드 결제로 발생한 거래인 경우 merchantName, merchantCategory, maskedCardNumber 필드가 포함됩니다.
+          일반 은행 거래(이체·입출금 등)는 해당 필드가 null로 반환됩니다.
+          """)
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -192,7 +199,21 @@ public class BankMyDataController {
                                   "transactionType": "DEPOSIT",
                                   "amount": 3000000,
                                   "balanceAfter": 3500000,
-                                  "description": "급여"
+                                  "description": "급여",
+                                  "merchantName": null,
+                                  "merchantCategory": null,
+                                  "maskedCardNumber": null
+                                },
+                                {
+                                  "transactionId": 9002,
+                                  "transactionDateTime": "2026-05-02T12:30:00",
+                                  "transactionType": "WITHDRAW",
+                                  "amount": 5500,
+                                  "balanceAfter": 3494500,
+                                  "description": "카드결제",
+                                  "merchantName": "스타벅스 강남점",
+                                  "merchantCategory": "CAFE",
+                                  "maskedCardNumber": "1234-****-****-5678"
                                 }
                               ],
                               "meta": { "traceId": "uuid" }
@@ -211,6 +232,22 @@ public class BankMyDataController {
                             {
                               "success": false,
                               "error": { "code": "VALID_001", "message": "fromDate: 날짜 형식은 YYYY-MM-DD여야 합니다" },
+                              "meta": { "traceId": "uuid" }
+                            }
+                            """))),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "404",
+        description = "계좌 없음",
+        content =
+            @Content(
+                mediaType = "application/json",
+                examples =
+                    @ExampleObject(
+                        value =
+                            """
+                            {
+                              "success": false,
+                              "error": { "code": "ACCOUNT_001", "message": "계좌 없음" },
                               "meta": { "traceId": "uuid" }
                             }
                             """)))
@@ -238,7 +275,13 @@ public class BankMyDataController {
     return ApiResponse.success(bankMyDataService.getTransactions(accountId, request));
   }
 
-  @Operation(summary = "거래 카테고리 조회")
+  @Operation(
+      summary = "거래 카테고리별 합계 조회",
+      description =
+          """
+          카드 결제 승인 내역을 기반으로 가맹점 카테고리별 지출 합계를 반환합니다.
+          카드가 연결되지 않은 계좌이거나 카드 승인내역이 없는 경우 빈 배열을 반환합니다.
+          """)
   @ApiResponses({
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
@@ -253,8 +296,9 @@ public class BankMyDataController {
                             {
                               "success": true,
                               "data": [
-                                { "category": "급여", "amount": 3000000 },
-                                { "category": "식비", "amount": 280000 }
+                                { "category": "CAFE", "amount": 23500 },
+                                { "category": "FOOD_BEVERAGE", "amount": 85000 },
+                                { "category": "TRANSPORTATION", "amount": 15000 }
                               ],
                               "meta": { "traceId": "uuid" }
                             }

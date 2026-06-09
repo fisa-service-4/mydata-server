@@ -9,4 +9,7 @@ public record TransactionResponse(
     String transactionType,
     Long amount,
     Long balanceAfter,
-    String description) {}
+    String description,
+    String merchantName,
+    String merchantCategory,
+    String maskedCardNumber) {}

@@ -34,8 +34,4 @@ public interface BankInternalClient {
       @RequestParam(required = false) String toDate,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "20") Integer size);
-
-  @GetMapping("/baas/v1/bank/accounts/{accountId}/transactions/categories")
-  ApiResponse<List<BankTransactionCategoryResponse>> getTransactionCategories(
-      @PathVariable Long accountId);
 }
