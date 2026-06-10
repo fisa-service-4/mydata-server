@@ -1,6 +1,6 @@
 package com.mydata.domain.aggregation.controller;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,7 +32,7 @@ class AggregationControllerTest {
     @Test
     @DisplayName("성공 - 정상 응답 반환")
     void success() throws Exception {
-      given(aggregationService.getAssetSummary(anyLong()))
+      given(aggregationService.getAssetSummary(anyString()))
           .willReturn(
               TotalAssetSummaryResponse.builder()
                   .totalAssetAmount(18000000L)
@@ -42,7 +42,7 @@ class AggregationControllerTest {
                   .build());
 
       mockMvc
-          .perform(get("/mydata/v1/assets/summary").header("X-User-Id", 1L))
+          .perform(get("/mydata/v1/assets/summary").header("X-Firebase-Uid", "test-uid"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.success").value(true))
           .andExpect(jsonPath("$.data.totalAssetAmount").value(18000000))
@@ -69,7 +69,7 @@ class AggregationControllerTest {
     @Test
     @DisplayName("성공 - 은행/증권 비율 정상 반환")
     void success() throws Exception {
-      given(aggregationService.getAssetDistribution(anyLong()))
+      given(aggregationService.getAssetDistribution(anyString()))
           .willReturn(
               AssetDistributionResponse.builder()
                   .totalAssetAmount(18000000L)
@@ -80,7 +80,7 @@ class AggregationControllerTest {
                   .build());
 
       mockMvc
-          .perform(get("/mydata/v1/assets/distribution").header("X-User-Id", 1L))
+          .perform(get("/mydata/v1/assets/distribution").header("X-Firebase-Uid", "test-uid"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.success").value(true))
           .andExpect(jsonPath("$.data.bankRatio").value(16.67))
@@ -105,7 +105,7 @@ class AggregationControllerTest {
     @Test
     @DisplayName("성공 - 전체 대시보드 데이터 반환")
     void success() throws Exception {
-      given(aggregationService.getDashboard(anyLong()))
+      given(aggregationService.getDashboard(anyString()))
           .willReturn(
               DashboardResponse.builder()
                   .totalAssetAmount(18000000L)
@@ -118,7 +118,7 @@ class AggregationControllerTest {
                   .build());
 
       mockMvc
-          .perform(get("/mydata/v1/assets/dashboard").header("X-User-Id", 1L))
+          .perform(get("/mydata/v1/assets/dashboard").header("X-Firebase-Uid", "test-uid"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.success").value(true))
           .andExpect(jsonPath("$.data.totalAssetAmount").value(18000000))
@@ -131,7 +131,7 @@ class AggregationControllerTest {
     @Test
     @DisplayName("성공 - 증권 자산 없는 사용자 (investmentRatio = 0, holdingCount = 0)")
     void success_noStockAsset() throws Exception {
-      given(aggregationService.getDashboard(anyLong()))
+      given(aggregationService.getDashboard(anyString()))
           .willReturn(
               DashboardResponse.builder()
                   .totalAssetAmount(3000000L)
@@ -144,7 +144,7 @@ class AggregationControllerTest {
                   .build());
 
       mockMvc
-          .perform(get("/mydata/v1/assets/dashboard").header("X-User-Id", 2L))
+          .perform(get("/mydata/v1/assets/dashboard").header("X-Firebase-Uid", "test-uid"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.success").value(true))
           .andExpect(jsonPath("$.data.totalStockAssetAmount").value(0))
