@@ -4,7 +4,6 @@ import com.mydata.domain.bank.client.dto.response.*;
 import com.mydata.global.config.FeignConfig;
 import com.mydata.global.logging.TraceIdConstants;
 import com.mydata.global.response.ApiResponse;
-import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +27,7 @@ public interface BankInternalClient {
   ApiResponse<BankBalanceResponse> getBalance(@PathVariable Long accountId);
 
   @GetMapping("/baas/v1/bank/accounts/{accountId}/transactions")
-  ApiResponse<List<BankTransactionResponse>> getTransactions(
+  ApiResponse<BankTransactionListResponse> getTransactions(
       @PathVariable Long accountId,
       @RequestParam(required = false) String fromDate,
       @RequestParam(required = false) String toDate,

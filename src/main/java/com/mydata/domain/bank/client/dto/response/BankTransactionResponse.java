@@ -9,7 +9,7 @@ public class BankTransactionResponse {
 
   private Long transactionId;
 
-  private String transactionDateTime;
+  private String transactionAt;
 
   private String transactionType;
 
