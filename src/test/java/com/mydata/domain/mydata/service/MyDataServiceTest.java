@@ -3,6 +3,8 @@ package com.mydata.domain.mydata.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.mydata.domain.aggregation.service.AggregationService;
 import com.mydata.domain.bank.dto.response.AccountSummaryResponse;
@@ -184,7 +186,7 @@ class MyDataServiceTest {
   class Sync {
 
     @Test
-    @DisplayName("성공 - 모든 서비스 정상 동작 시 synced=true 반환")
+    @DisplayName("성공 - 모든 서비스 정상 동작 시 synced=true 반환 및 하위 서비스 호출 검증")
     void success() {
       given(bankMyDataService.getAccounts(UID)).willReturn(List.of(bankAccount()));
       given(stockMyDataService.getAccounts(UID)).willReturn(List.of(stockAccount()));
@@ -193,6 +195,10 @@ class MyDataServiceTest {
 
       assertThat(result.synced()).isTrue();
       assertThat(result.syncedAt()).isNotNull();
+
+      verify(bankMyDataService, times(1)).getAccounts(UID);
+      verify(stockMyDataService, times(1)).getAccounts(UID);
+      verify(aggregationService, times(1)).getAssetSummary(UID);
     }
 
     @Test
