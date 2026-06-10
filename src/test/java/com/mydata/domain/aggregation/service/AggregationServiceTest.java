@@ -293,5 +293,30 @@ class AggregationServiceTest {
       assertThat(result.holdingCount()).isEqualTo(0);
       assertThat(result.totalStockAssetAmount()).isEqualTo(0L);
     }
+
+    @Test
+    @DisplayName("성공 - 증권 자산 있을 때 금액 합산 및 수익률 계산 검증 (중복 합산 방지)")
+    void success_withStockAssets() {
+      given(bankMyDataService.getAccounts(UID)).willReturn(List.of(bankAccount(1_000_000L)));
+      given(stockMyDataService.getAccounts(UID)).willReturn(List.of(stockAccount(2001L)));
+      given(stockMyDataService.getHoldings(2001L))
+          .willReturn(
+              List.of(
+                  HoldingResponse.builder()
+                      .stockCode("005930")
+                      .stockName("삼성전자")
+                      .quantity(10L)
+                      .averagePrice(70_000L)
+                      .evaluationAmount(800_000.0)
+                      .build()));
+
+      DashboardResponse result = aggregationService.getDashboard(UID);
+
+      assertThat(result.totalBankAssetAmount()).isEqualTo(1_000_000L);
+      assertThat(result.totalStockAssetAmount()).isEqualTo(800_000L);
+      assertThat(result.totalAssetAmount()).isEqualTo(1_800_000L);
+      assertThat(result.holdingCount()).isEqualTo(1);
+      assertThat(result.totalProfitRate()).isEqualTo(14.29);
+    }
   }
 }
