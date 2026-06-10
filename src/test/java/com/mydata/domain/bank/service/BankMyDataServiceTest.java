@@ -13,6 +13,7 @@ import com.mydata.domain.bank.client.dto.response.BankAccountDetailResponse;
 import com.mydata.domain.bank.client.dto.response.BankAccountListResponse;
 import com.mydata.domain.bank.client.dto.response.BankAccountResponse;
 import com.mydata.domain.bank.client.dto.response.BankBalanceResponse;
+import com.mydata.domain.bank.client.dto.response.BankTransactionListResponse;
 import com.mydata.domain.bank.client.dto.response.BankTransactionResponse;
 import com.mydata.domain.bank.client.internal.BankInternalClient;
 import com.mydata.domain.bank.dto.request.TransactionSearchRequest;
@@ -279,14 +280,16 @@ class BankMyDataServiceTest {
     void success_noCards() {
       BankTransactionResponse tx = mock(BankTransactionResponse.class);
       given(tx.getTransactionId()).willReturn(9001L);
-      given(tx.getTransactionDateTime()).willReturn("2026-05-01T09:00:00");
+      given(tx.getTransactionAt()).willReturn("2026-05-01T09:00:00");
       given(tx.getTransactionType()).willReturn("DEPOSIT");
       given(tx.getAmount()).willReturn(3_000_000L);
       given(tx.getBalanceAfter()).willReturn(3_500_000L);
       given(tx.getDescription()).willReturn("급여");
 
+      BankTransactionListResponse txListResponse = mock(BankTransactionListResponse.class);
+      given(txListResponse.getContent()).willReturn(List.of(tx));
       given(bankInternalClient.getTransactions(ACCOUNT_ID, "2026-05-01", "2026-05-31", 0, 20))
-          .willReturn(ApiResponse.success(List.of(tx)));
+          .willReturn(ApiResponse.success(txListResponse));
 
       CardListResponse cardListResponse = mock(CardListResponse.class);
       given(cardListResponse.getContent()).willReturn(Collections.emptyList());
@@ -307,14 +310,16 @@ class BankMyDataServiceTest {
     void success_withCardApproval() {
       BankTransactionResponse tx = mock(BankTransactionResponse.class);
       given(tx.getTransactionId()).willReturn(9002L);
-      given(tx.getTransactionDateTime()).willReturn("2026-05-02T12:30:00");
+      given(tx.getTransactionAt()).willReturn("2026-05-02T12:30:00");
       given(tx.getTransactionType()).willReturn("WITHDRAW");
       given(tx.getAmount()).willReturn(5_500L);
       given(tx.getBalanceAfter()).willReturn(3_494_500L);
       given(tx.getDescription()).willReturn("카드결제");
 
+      BankTransactionListResponse txListResponse = mock(BankTransactionListResponse.class);
+      given(txListResponse.getContent()).willReturn(List.of(tx));
       given(bankInternalClient.getTransactions(ACCOUNT_ID, "2026-05-01", "2026-05-31", 0, 20))
-          .willReturn(ApiResponse.success(List.of(tx)));
+          .willReturn(ApiResponse.success(txListResponse));
 
       CardItemResponse card = mock(CardItemResponse.class);
       given(card.getCardId()).willReturn(1L);
@@ -353,8 +358,10 @@ class BankMyDataServiceTest {
       given(tx.getAmount()).willReturn(10_000L);
       given(tx.getBalanceAfter()).willReturn(990_000L);
 
+      BankTransactionListResponse txListResponse = mock(BankTransactionListResponse.class);
+      given(txListResponse.getContent()).willReturn(List.of(tx));
       given(bankInternalClient.getTransactions(ACCOUNT_ID, "2026-05-01", "2026-05-31", 0, 20))
-          .willReturn(ApiResponse.success(List.of(tx)));
+          .willReturn(ApiResponse.success(txListResponse));
 
       CardItemResponse card = mock(CardItemResponse.class);
       given(card.getCardId()).willReturn(1L);
