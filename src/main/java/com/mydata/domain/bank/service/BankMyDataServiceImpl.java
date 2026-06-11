@@ -3,6 +3,7 @@ package com.mydata.domain.bank.service;
 import com.mydata.domain.bank.client.dto.response.BankAccountDetailResponse;
 import com.mydata.domain.bank.client.dto.response.BankAccountListResponse;
 import com.mydata.domain.bank.client.dto.response.BankBalanceResponse;
+import com.mydata.domain.bank.client.dto.response.BankTransactionListResponse;
 import com.mydata.domain.bank.client.dto.response.BankTransactionResponse;
 import com.mydata.domain.bank.client.internal.BankInternalClient;
 import com.mydata.domain.bank.dto.request.TransactionSearchRequest;
@@ -129,7 +130,7 @@ public class BankMyDataServiceImpl implements BankMyDataService {
                     cardData.approvalByTxId().get(tx.getTransactionId());
                 return TransactionResponse.builder()
                     .transactionId(tx.getTransactionId())
-                    .transactionDateTime(tx.getTransactionDateTime())
+                    .transactionDateTime(tx.getTransactionAt())
                     .transactionType(tx.getTransactionType())
                     .amount(tx.getAmount())
                     .balanceAfter(tx.getBalanceAfter())
@@ -173,7 +174,7 @@ public class BankMyDataServiceImpl implements BankMyDataService {
   private List<BankTransactionResponse> fetchBankTransactions(
       Long accountId, TransactionSearchRequest request) {
     try {
-      ApiResponse<List<BankTransactionResponse>> response =
+      ApiResponse<BankTransactionListResponse> response =
           bankInternalClient.getTransactions(
               accountId, request.fromDate(), request.toDate(), request.page(), request.size());
 
@@ -181,7 +182,8 @@ public class BankMyDataServiceImpl implements BankMyDataService {
         throw new BankMyDataException(ErrorCode.BANK_INTERNAL_API_ERROR);
       }
 
-      return response.data();
+      List<BankTransactionResponse> content = response.data().getContent();
+      return content != null ? content : Collections.emptyList();
 
     } catch (FeignException.NotFound e) {
       throw new BankMyDataException(ErrorCode.ACCOUNT_001, e);

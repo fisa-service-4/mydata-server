@@ -1,7 +1,7 @@
 package com.mydata.domain.mydata.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,14 +38,14 @@ class MyDataControllerTest {
     @Test
     @DisplayName("성공 - 은행/증권 모두 연동")
     void success() throws Exception {
-      given(myDataService.connect(anyLong(), any()))
+      given(myDataService.connect(any(), anyString()))
           .willReturn(
               ConnectResponse.builder().connected(true).bankLinked(true).stockLinked(true).build());
 
       mockMvc
           .perform(
               post("/mydata/v1/connect")
-                  .header("X-User-Id", 1L)
+                  .header("X-Firebase-Uid", "test-uid")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content("{\"provider\":\"test\"}"))
           .andExpect(status().isOk())
@@ -74,7 +74,7 @@ class MyDataControllerTest {
       mockMvc
           .perform(
               post("/mydata/v1/connect")
-                  .header("X-User-Id", 1L)
+                  .header("X-Firebase-Uid", "test-uid")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content("{\"provider\":\"\"}"))
           .andExpect(status().isBadRequest())
@@ -89,7 +89,7 @@ class MyDataControllerTest {
     @Test
     @DisplayName("성공 - 은행/증권 계좌 목록 반환")
     void success() throws Exception {
-      given(myDataService.getConnections(anyLong()))
+      given(myDataService.getConnections(anyString()))
           .willReturn(
               ConnectionResponse.builder()
                   .bankAccounts(
@@ -105,7 +105,7 @@ class MyDataControllerTest {
                   .build());
 
       mockMvc
-          .perform(get("/mydata/v1/connections").header("X-User-Id", 1L))
+          .perform(get("/mydata/v1/connections").header("X-Firebase-Uid", "test-uid"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.success").value(true))
           .andExpect(jsonPath("$.data.bankAccounts[0].accountId").value(1001))
@@ -116,7 +116,7 @@ class MyDataControllerTest {
     @Test
     @DisplayName("성공 - 연동 계좌 없는 경우 빈 목록 반환")
     void success_emptyAccounts() throws Exception {
-      given(myDataService.getConnections(anyLong()))
+      given(myDataService.getConnections(anyString()))
           .willReturn(
               ConnectionResponse.builder()
                   .bankAccounts(List.of())
@@ -124,7 +124,7 @@ class MyDataControllerTest {
                   .build());
 
       mockMvc
-          .perform(get("/mydata/v1/connections").header("X-User-Id", 2L))
+          .perform(get("/mydata/v1/connections").header("X-Firebase-Uid", "test-uid"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.success").value(true))
           .andExpect(jsonPath("$.data.bankAccounts").isEmpty())
@@ -149,7 +149,7 @@ class MyDataControllerTest {
     @Test
     @DisplayName("성공 - 동기화 완료 후 synced=true 반환")
     void success() throws Exception {
-      given(myDataService.sync(anyLong()))
+      given(myDataService.sync(anyString()))
           .willReturn(
               SyncResponse.builder()
                   .synced(true)
@@ -157,7 +157,7 @@ class MyDataControllerTest {
                   .build());
 
       mockMvc
-          .perform(post("/mydata/v1/sync").header("X-User-Id", 1L))
+          .perform(post("/mydata/v1/sync").header("X-Firebase-Uid", "test-uid"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.success").value(true))
           .andExpect(jsonPath("$.data.synced").value(true))
