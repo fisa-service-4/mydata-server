@@ -8,7 +8,7 @@ spring:
 # on-prem transaction-server
 external:
   baas:
-    url: http://10.10.4.107:8083
+    url: http://10.10.4.105:8083
 
 logging:
   pattern:
